@@ -1,22 +1,14 @@
 package com.mindcare.mindcare_backend.exception;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import java.time.LocalDateTime;
 
+@Data
+@AllArgsConstructor
 public class ErrorResponse {
-    private int status;
-    private String error;
-    private String message;
-    private LocalDateTime timestamp;
-    private String path;
-
-    public ErrorResponse(int status, String error, String message, String path) {
-        this.status = status;
-        this.error = error;
-        this.message = message;
-        this.timestamp = LocalDateTime.now();
-        this.path = path;
-    }
-
-    // Getters and setters
-    // (omitted for brevity or include all depending on your structure)
+    private LocalDateTime timestamp;  // Thời gian lỗi xảy ra
+    private int status;               // Mã lỗi HTTP
+    private String message;           // Thông điệp lỗi
+    private String details;           // Chi tiết lỗi (nếu có)
 }

@@ -1,15 +1,14 @@
 package com.mindcare.mindcare_backend.service;
 
-import com.mindcare.mindcare_backend.dto.UserResponse;
-import com.mindcare.mindcare_backend.model.User;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
+import com.mindcare.mindcare_backend.dto.request.UserProfileUpdateRequest;
+import com.mindcare.mindcare_backend.dto.response.UserResponse;
+import org.springframework.web.multipart.MultipartFile; // Cho việc upload avatar
 
 public interface UserService {
-    UserResponse getCurrentUser();
-    List<UserResponse> getAllUsers();
-    UserResponse getUserById(String id);
-    UserResponse updateUser(String id, String name, int age, MultipartFile avatarFile);
-    void deleteUser(String id);
+
+    // Lấy thông tin hồ sơ của người dùng đang được xác thực.
+    UserResponse getUserProfile(String userId);
+
+    //Cập nhật thông tin hồ sơ của người dùng đang được xác thực.
+    UserResponse updateUserProfile(String userId, UserProfileUpdateRequest updateRequest, MultipartFile avatarFile);
 }
