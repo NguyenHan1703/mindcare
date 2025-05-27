@@ -1,38 +1,43 @@
 import React, { createContext, useContext, useEffect, useReducer } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-// Giả sử bạn sẽ tạo các hàm API này trong src/api/auth.api.js
-import { loginUserApi, registerUserApi } from '../api/auth.api';
-// Giả sử apiClient sẽ được cấu hình để tự động đính kèm token
-// import apiClient from '../api/apiClient'; // Có thể không cần trực tiếp ở đây nếu api functions đã dùng
+import { loginUserApi, registerUserApi } from '../api/auth.api.js'; // Đã sửa tên file cho đúng
+
+// Thêm logger để check lỗi 
+const logger = {
+  info: (...args) => console.log('AuthContext [INFO]', ...args),
+  error: (...args) => console.error('AuthContext [ERROR]', ...args),
+  debug: (...args) => console.debug('AuthContext [DEBUG]', ...args),
+};
 
 // --- Định nghĩa State ban đầu và Reducer ---
 const initialState = {
-  isLoading: true,    // Trạng thái loading ban đầu khi kiểm tra token
-  userToken: null,    // JWT Token
-  userInfo: null,     // Thông tin người dùng { id, username, roles, avatarUrl }
-  error: null,        // Để lưu trữ lỗi nếu có
+  isLoading: true,
+  userToken: null,
+  userInfo: null, // { id, username, roles, avatarUrl }
+  error: null,
 };
 
-// Định nghĩa các action types
 const ActionTypes = {
   SET_LOADING: 'SET_LOADING',
   LOGIN_SUCCESS: 'LOGIN_SUCCESS',
   LOGOUT: 'LOGOUT',
-  REGISTER_SUCCESS: 'REGISTER_SUCCESS', // Có thể không thay đổi state nhiều, chủ yếu là thông báo
+  REGISTER_SUCCESS: 'REGISTER_SUCCESS',
   REGISTER_FAIL: 'REGISTER_FAIL',
   LOGIN_FAIL: 'LOGIN_FAIL',
   RESTORE_TOKEN: 'RESTORE_TOKEN',
   SET_ERROR: 'SET_ERROR',
   CLEAR_ERROR: 'CLEAR_ERROR',
+  UPDATE_USER_INFO_CONTEXT: 'UPDATE_USER_INFO_CONTEXT', // Action mới để cập nhật userInfo
 };
 
 const authReducer = (prevState, action) => {
+  logger.debug('authReducer dispatch:', action.type, action.payload || action.token || action.error);
   switch (action.type) {
     case ActionTypes.SET_LOADING:
       return {
         ...prevState,
         isLoading: action.payload,
-        error: null, // Xóa lỗi khi bắt đầu loading mới
+        error: null,
       };
     case ActionTypes.RESTORE_TOKEN:
       return {
@@ -63,12 +68,12 @@ const authReducer = (prevState, action) => {
         ...prevState,
         userToken: null,
         userInfo: null,
-        isLoading: false,
+        isLoading: false, // Đảm bảo isLoading là false khi logout
         error: null,
       };
-    case ActionTypes.REGISTER_SUCCESS: // Đăng ký thành công có thể không thay đổi state ở đây
-      return {                         // mà chỉ điều hướng hoặc hiển thị thông báo.
-        ...prevState,                  // User sẽ đăng nhập riêng.
+    case ActionTypes.REGISTER_SUCCESS:
+      return {
+        ...prevState,
         isLoading: false,
         error: null,
       };
@@ -78,103 +83,121 @@ const authReducer = (prevState, action) => {
         isLoading: false,
         error: action.error,
       };
-    case ActionTypes.SET_ERROR:
+    case ActionTypes.SET_ERROR: // Có thể không cần thiết nếu LOGIN_FAIL và REGISTER_FAIL đã đủ
       return {
         ...prevState,
         error: action.error,
-        isLoading: false, // Thường thì khi có lỗi, loading nên dừng
+        isLoading: false,
       };
     case ActionTypes.CLEAR_ERROR:
       return {
         ...prevState,
         error: null,
       };
+    case ActionTypes.UPDATE_USER_INFO_CONTEXT: // Xử lý action cập nhật userInfo
+      return {
+        ...prevState,
+        userInfo: action.userInfo,
+      };
     default:
       return prevState;
   }
 };
 
-// --- Tạo Context ---
 const AuthContext = createContext();
 
-// --- Tạo Provider Component ---
 export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
-  // Hàm kiểm tra token đã lưu khi khởi động app
   const checkAuthState = async () => {
     dispatch({ type: ActionTypes.SET_LOADING, payload: true });
     try {
       const token = await AsyncStorage.getItem('userToken');
       const storedUserInfo = await AsyncStorage.getItem('userInfo');
       if (token && storedUserInfo) {
+        logger.info('Token and userInfo restored from AsyncStorage.');
         dispatch({ type: ActionTypes.RESTORE_TOKEN, token, userInfo: JSON.parse(storedUserInfo) });
       } else {
-        dispatch({ type: ActionTypes.LOGOUT }); // Đảm bảo state sạch nếu không có token
+        logger.info('No token or userInfo found in AsyncStorage, dispatching LOGOUT.');
+        dispatch({ type: ActionTypes.LOGOUT });
       }
     } catch (e) {
-      console.error('Lỗi khi khôi phục token:', e);
-      dispatch({ type: ActionTypes.LOGOUT }); // Lỗi thì logout
-    } finally {
-      // Dù có token hay không, việc kiểm tra đã xong
-      // dispatch({ type: ActionTypes.SET_LOADING, payload: false }); 
-      // SET_LOADING trong RESTORE_TOKEN hoặc LOGOUT đã xử lý việc này
+      logger.error('Lỗi khi khôi phục token từ AsyncStorage:', e);
+      dispatch({ type: ActionTypes.LOGOUT });
     }
+    // SET_LOADING đã được xử lý trong RESTORE_TOKEN hoặc LOGOUT
   };
 
   useEffect(() => {
     checkAuthState();
   }, []);
 
-  // Các hàm xử lý nghiệp vụ
   const authContextValue = {
     login: async (username, password) => {
       dispatch({ type: ActionTypes.SET_LOADING, payload: true });
+      dispatch({ type: ActionTypes.CLEAR_ERROR }); // Xóa lỗi cũ
       try {
-        // Giả sử loginUserApi trả về { token, user: { id, username, roles, avatarUrl } }
-        const response = await loginUserApi(username, password);
-        const { token, id, username: respUsername, roles, avatarUrl } = response; // Backend trả về JwtResponse
-                                                                          // với các trường token, id, username, avatarUrl, roles
+        const response = await loginUserApi(username, password); // response là của Axios
+        logger.debug('Login API response.data:', response.data);
 
-        const userInfoToStore = { id, username: respUsername, roles, avatarUrl };
+        // ✨ SỬA LỖI Ở ĐÂY: Trích xuất từ response.data và kiểm tra token ✨
+        const responseData = response.data; // Dữ liệu thực sự từ backend nằm trong response.data
 
-        await AsyncStorage.setItem('userToken', token);
-        await AsyncStorage.setItem('userInfo', JSON.stringify(userInfoToStore));
-        // apiClient.defaults.headers.common['Authorization'] = `Bearer ${token}`; // Cấu hình trong apiClient interceptor sẽ tốt hơn
-        dispatch({ type: ActionTypes.LOGIN_SUCCESS, token, userInfo: userInfoToStore });
-        return Promise.resolve(response); // Trả về response để component xử lý tiếp nếu cần
+        if (responseData && responseData.token) {
+          const { token, id, username: respUsername, roles, avatarUrl } = responseData;
+
+          const userInfoToStore = {
+            id: id || null,
+            username: respUsername || null,
+            roles: roles || [],
+            avatarUrl: avatarUrl || null,
+          };
+
+          await AsyncStorage.setItem('userToken', token); // Chỉ lưu khi token có giá trị
+          await AsyncStorage.setItem('userInfo', JSON.stringify(userInfoToStore));
+          
+          dispatch({ type: ActionTypes.LOGIN_SUCCESS, token, userInfo: userInfoToStore });
+          logger.info(`User ${respUsername} logged in successfully.`);
+          return Promise.resolve(responseData); // Trả về responseData
+        } else {
+          // Trường hợp API thành công (status 2xx) nhưng không trả về token
+          const errorMessage = 'Phản hồi từ server không hợp lệ (thiếu token).';
+          logger.error('AuthContext Login: Invalid response from server (missing token).', responseData);
+          dispatch({ type: ActionTypes.LOGIN_FAIL, error: errorMessage });
+          return Promise.reject(new Error(errorMessage));
+        }
       } catch (error) {
+        // Lỗi từ Axios (ví dụ: 401, 500, network error)
         const errorMessage = error.response?.data?.message || error.message || 'Đăng nhập thất bại';
-        console.error('Lỗi đăng nhập AuthContext:', errorMessage, error.response?.data);
+        logger.error('Lỗi đăng nhập AuthContext:', errorMessage, error.response?.data || error);
         dispatch({ type: ActionTypes.LOGIN_FAIL, error: errorMessage });
-        return Promise.reject(new Error(errorMessage)); // Trả về lỗi để component xử lý
+        return Promise.reject(new Error(errorMessage));
       }
     },
     logout: async () => {
-      dispatch({ type: ActionTypes.SET_LOADING, payload: true });
+      logger.info('User logging out.');
+      // Không cần SET_LOADING ở đây vì LOGOUT đã set isLoading: false
+      // dispatch({ type: ActionTypes.SET_LOADING, payload: true }); 
       try {
         await AsyncStorage.removeItem('userToken');
         await AsyncStorage.removeItem('userInfo');
-        // delete apiClient.defaults.headers.common['Authorization']; // Cấu hình trong apiClient interceptor sẽ tốt hơn
         dispatch({ type: ActionTypes.LOGOUT });
       } catch (e) {
-        console.error('Lỗi khi đăng xuất:', e);
-        // Vẫn dispatch logout để clear state dù có lỗi xóa AsyncStorage
-        dispatch({ type: ActionTypes.LOGOUT });
-      } finally {
-        // dispatch({ type: ActionTypes.SET_LOADING, payload: false });
+        logger.error('Lỗi khi đăng xuất (AsyncStorage):', e);
+        dispatch({ type: ActionTypes.LOGOUT }); // Vẫn dispatch để clear state
       }
     },
     register: async (username, password) => {
       dispatch({ type: ActionTypes.SET_LOADING, payload: true });
+      dispatch({ type: ActionTypes.CLEAR_ERROR });
       try {
-        // Giả sử registerUserApi trả về response thành công (ví dụ: message)
         const response = await registerUserApi(username, password);
         dispatch({ type: ActionTypes.REGISTER_SUCCESS });
-        return Promise.resolve(response); // Trả về response để component xử lý tiếp
+        logger.info(`User ${username} registration API call successful.`);
+        return Promise.resolve(response.data); // Trả về response.data
       } catch (error) {
         const errorMessage = error.response?.data?.message || error.message || 'Đăng ký thất bại';
-        console.error('Lỗi đăng ký AuthContext:', errorMessage, error.response?.data);
+        logger.error('Lỗi đăng ký AuthContext:', errorMessage, error.response?.data);
         dispatch({ type: ActionTypes.REGISTER_FAIL, error: errorMessage });
         return Promise.reject(new Error(errorMessage));
       }
@@ -182,18 +205,37 @@ export const AuthProvider = ({ children }) => {
     clearError: () => {
       dispatch({ type: ActionTypes.CLEAR_ERROR });
     },
-    // Thêm hàm cập nhật userInfo nếu cần, ví dụ sau khi user cập nhật profile
-    updateUserInfo: async (newUserInfo) => {
-        try {
-            const currentUserInfo = state.userInfo ? {...state.userInfo} : {};
-            const updatedUserInfo = { ...currentUserInfo, ...newUserInfo };
-            await AsyncStorage.setItem('userInfo', JSON.stringify(updatedUserInfo));
-            dispatch({ type: ActionTypes.RESTORE_TOKEN, token: state.userToken, userInfo: updatedUserInfo });
-        } catch (error) {
-            console.error('Lỗi khi cập nhật userInfo trong AuthContext:', error);
+    updateUserInfo: async (newPartialUserInfo) => {
+      // Hàm này cập nhật userInfo trong context và AsyncStorage sau khi user thay đổi profile
+      try {
+        const currentToken = state.userToken;
+        if (!currentToken) {
+          logger.warn('updateUserInfo called but no userToken found. Aborting.');
+          return;
         }
+        // Lấy userInfo hiện tại từ state, nếu không có thì lấy từ AsyncStorage (ít xảy ra nếu đã login)
+        let currentUserInfo = state.userInfo;
+        if (!currentUserInfo) {
+            const storedUserInfo = await AsyncStorage.getItem('userInfo');
+            if (storedUserInfo) {
+                currentUserInfo = JSON.parse(storedUserInfo);
+            } else {
+                logger.error('Cannot update userInfo: current userInfo not found in state or AsyncStorage.');
+                // Có thể gọi logout ở đây nếu state không nhất quán
+                return;
+            }
+        }
+        
+        const updatedUserInfo = { ...currentUserInfo, ...newPartialUserInfo };
+        await AsyncStorage.setItem('userInfo', JSON.stringify(updatedUserInfo));
+        // Dispatch action mới hoặc dùng lại RESTORE_TOKEN nếu nó không set isLoading = true
+        dispatch({ type: ActionTypes.UPDATE_USER_INFO_CONTEXT, userInfo: updatedUserInfo });
+        logger.info('UserInfo updated in AuthContext and AsyncStorage.');
+      } catch (error) {
+        logger.error('Lỗi khi cập nhật userInfo trong AuthContext:', error);
+      }
     },
-    state, // Truyền toàn bộ state ra ngoài
+    state,
   };
 
   return (
@@ -203,7 +245,6 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-// --- Custom Hook để sử dụng Context ---
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {

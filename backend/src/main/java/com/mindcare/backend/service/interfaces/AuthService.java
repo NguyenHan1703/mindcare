@@ -4,11 +4,11 @@ import com.mindcare.backend.dto.auth.ForgotPasswordRequestDto;
 import com.mindcare.backend.dto.auth.LoginRequest;
 import com.mindcare.backend.dto.auth.JwtResponse;
 import com.mindcare.backend.dto.auth.RegisterRequest;
-import com.mindcare.backend.model.User; // Import User model
+import com.mindcare.backend.dto.response.MessageResponse;
 
 public interface AuthService {
     // Đăng ký một người dùng mới.
-    User registerUser(RegisterRequest registerRequest);
+    MessageResponse registerUser(RegisterRequest registerRequest);
 
     // Đăng nhập người dùng và tạo JWT.
     JwtResponse loginUser(LoginRequest loginRequest);
@@ -17,5 +17,5 @@ public interface AuthService {
      * Xử lý yêu cầu đặt lại mật khẩu cho người dùng.
      * (Phiên bản đơn giản: không gửi email xác nhận)
      */
-    void forgotPassword(ForgotPasswordRequestDto forgotPasswordRequest);
+    MessageResponse forgotPassword(ForgotPasswordRequestDto forgotPasswordRequest);
 }

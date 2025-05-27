@@ -4,10 +4,11 @@ import com.mindcare.backend.dto.auth.ForgotPasswordRequestDto;
 import com.mindcare.backend.dto.auth.LoginRequest;
 import com.mindcare.backend.dto.auth.JwtResponse;
 import com.mindcare.backend.dto.auth.RegisterRequest;
+import com.mindcare.backend.dto.response.MessageResponse;
 import com.mindcare.backend.enums.ERole;
+import com.mindcare.backend.exception.BadRequestException;
 import com.mindcare.backend.exception.ResourceNotFoundException;
 import com.mindcare.backend.exception.UserAlreadyExistsException;
-import com.mindcare.backend.exception.BadRequestException;
 import com.mindcare.backend.model.Role;
 import com.mindcare.backend.model.User;
 import com.mindcare.backend.repository.RoleRepository;
@@ -60,7 +61,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public User registerUser(RegisterRequest registerRequest) {
+    public MessageResponse registerUser(RegisterRequest registerRequest) {
         logger.info("Attempting to register user: {}", registerRequest.getUsername());
         if (userRepository.existsByUsername(registerRequest.getUsername())) {
             logger.warn("Registration failed: Username '{}' is already taken.", registerRequest.getUsername());
@@ -88,23 +89,33 @@ public class AuthServiceImpl implements AuthService {
 
         User savedUser = userRepository.save(user);
         logger.info("User registered successfully: {} (ID: {})", savedUser.getUsername(), savedUser.getId());
-        return savedUser;
+        return new MessageResponse("Người dùng đã được đăng ký thành công!");
     }
 
     @Override
     public JwtResponse loginUser(LoginRequest loginRequest) {
         logger.info("Attempting to authenticate user: {}", loginRequest.getUsername());
         try {
+            // 1. Xác thực người dùng bằng AuthenticationManager
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
+            // 2. Nếu xác thực thành công, đặt thông tin xác thực vào SecurityContext
             SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            // 3. Tạo JWT token
             String jwt = jwtUtils.generateJwtToken(authentication);
 
+            // 4. Lấy thông tin UserDetails từ đối tượng Authentication
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+
+            // 5. Lấy danh sách các vai trò (roles)
             List<String> roles = userDetails.getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority)
                     .collect(Collectors.toList());
+            // 6. Lấy thông tin avatarUrl từ User entity (nếu có)
+            User userEntity = userRepository.findById(userDetails.getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy User với ID: " + userDetails.getId() + " sau khi xác thực."));
 
             logger.info("User authenticated successfully: {}", userDetails.getUsername());
             return new JwtResponse(
@@ -116,12 +127,15 @@ public class AuthServiceImpl implements AuthService {
             );
         } catch (AuthenticationException e) {
             logger.warn("Authentication failed for user {}: {}", loginRequest.getUsername(), e.getMessage());
-            throw e; // Ném lại AuthenticationException để GlobalExceptionHandler hoặc AuthEntryPointJwt xử lý
+            throw new BadRequestException("Xác thực thất bại: Tên đăng nhập hoặc mật khẩu không đúng.");
+        } catch (Exception e) {
+            logger.error("Lỗi không xác định trong quá trình đăng nhập cho user {}: {}", loginRequest.getUsername(), e.getMessage(), e);
+            throw e; // Ném lại để GlobalExceptionHandler xử lý như một lỗi server 500
         }
     }
     @Override
     @Transactional
-    public void forgotPassword(ForgotPasswordRequestDto forgotPasswordRequest) {
+    public MessageResponse forgotPassword(ForgotPasswordRequestDto forgotPasswordRequest) {
         String username = forgotPasswordRequest.getUsername();
         String newPassword = forgotPasswordRequest.getNewPassword();
 
@@ -138,5 +152,6 @@ public class AuthServiceImpl implements AuthService {
         userRepository.save(user);
 
         logger.info("Password reset successfully for username: {}", username);
+        return new MessageResponse("Mật khẩu đã được đặt lại thành công. Vui lòng đăng nhập lại.");
     }
 }
