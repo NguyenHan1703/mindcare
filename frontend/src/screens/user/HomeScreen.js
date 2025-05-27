@@ -16,7 +16,6 @@ import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useAuth } from '../../contexts/AuthContext';
 import * as ROUTES from '../../constants/routes';
 import COLORS from '../../constants/colors';
-// ✨ SỬA TÊN HÀM API KHI IMPORT ✨
 import {
   getUserConversationsApi,
   createConversationApi,
@@ -67,6 +66,18 @@ const HomeScreen = () => {
   );
 
   const handleCreateConversation = async () => {
+    console.log('handleCreateConversation triggered, isCreatingConvo:', isCreatingConvo);
+    if (isCreatingConvo) return; // Tránh gọi nhiều lần
+    setIsCreatingConvo(true);
+    // ...
+    try {
+    // ...
+    } catch (err) {
+    // ...
+    } finally {
+    console.log('handleCreateConversation finished, setting isCreatingConvo to false');
+    setIsCreatingConvo(false); // Đảm bảo luôn được set lại
+  }
     setIsCreatingConvo(true);
     setError(null);
     try {
@@ -125,26 +136,32 @@ const HomeScreen = () => {
 
   const renderHeader = () => (
     <View style={styles.headerContainer}>
-      <TouchableOpacity onPress={() => fetchConversations(false)}>
-        <Text style={styles.headerTitle}>MindCare</Text>
-      </TouchableOpacity>
-      <View style={styles.headerActions}>
+      {/* Nhóm MindCare và Nút Tạo Mới ở bên TRÁI */}
+      <View style={styles.headerLeftGroup}>
+        <TouchableOpacity onPress={() => {console.log('MindCare logo pressed'); fetchConversations(false)}} style={styles.mindCareButton}Ư>
+          <Text style={styles.headerTitle}>MindCare</Text>
+        </TouchableOpacity>
         <TouchableOpacity onPress={handleCreateConversation} style={styles.addButton} disabled={isCreatingConvo}>
           {isCreatingConvo ? (
             <ActivityIndicator color={COLORS.PRIMARY} size="small" />
           ) : (
-            <Ionicons name="add-circle-outline" size={30} color={COLORS.PRIMARY} />
+            <Ionicons name="add-circle-outline" size={28} color={COLORS.PRIMARY} /> 
           )}
-          <Text style={styles.addButtonText}>Tạo mới</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate(ROUTES.PROFILE_SCREEN)} style={styles.profileButton}>
-          {userInfo?.avatarUrl ? (
-            <Image source={{ uri: userInfo.avatarUrl }} style={styles.avatar} />
-          ) : (
-            <Ionicons name="person-circle-outline" size={32} color={COLORS.TEXT_PRIMARY} />
-          )}
+           { <Text style={styles.addButtonText}>Tạo mới</Text> }
         </TouchableOpacity>
       </View>
+      <TouchableOpacity onPress={() => {
+          console.log("Profile button in header pressed"); // Test log
+          navigation.navigate(ROUTES.PROFILE_SCREEN);
+        }} 
+        style={styles.profileButton}
+      >
+        {userInfo?.avatarUrl ? (
+          <Image source={{ uri: userInfo.avatarUrl }} style={styles.avatar} />
+        ) : (
+          <Ionicons name="person-circle-outline" size={32} color={COLORS.TEXT_PRIMARY} />
+        )}
+      </TouchableOpacity>
     </View>
   );
 
@@ -217,6 +234,13 @@ const styles = StyleSheet.create({
     borderBottomColor: COLORS.BORDER,
     backgroundColor: COLORS.BACKGROUND_SECONDARY,
   },
+    headerLeftGroup: { // Cho MindCare và nút Add
+      flexDirection: 'row',
+      alignItems: 'center',
+  },
+    mindCareButton: {
+      paddingRight: 10, // Khoảng cách giữa MindCare và nút Add
+  },
   headerTitle: {
     fontSize: 22,
     fontWeight: 'bold',
@@ -227,15 +251,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   addButton: {
+    paddingHorizontal: 8,
+    paddingVertical: 5,
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 5,
-    marginRight: 15,
   },
   addButtonText: {
     color: COLORS.PRIMARY,
     fontSize: 16,
-    marginLeft: 5,
+    marginLeft: 3,
   },
   profileButton: {
     padding: 5,
@@ -247,7 +271,7 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     paddingVertical: 10,
-    paddingBottom: 20, // Thêm padding dưới cho dễ cuộn
+    paddingBottom: 20,
   },
   centeredMessageContainer: {
     flex: 1,
