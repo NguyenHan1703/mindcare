@@ -1,5 +1,5 @@
 // src/constants/emotionDefinitions.js
-import COLORS from './colors'; // Giả sử bạn muốn dùng màu từ file colors.js cho màu mặc định
+import COLORS from './colors' // Giả sử bạn muốn dùng màu từ file colors.js cho màu mặc định
 
 // Danh sách các cảm xúc cơ bản theo yêu cầu của bạn
 // Mỗi cảm xúc có:
@@ -16,14 +16,14 @@ export const EMOTIONS_LIST = [
   { name: 'Lo lắng',   value: 'anxious',  icon: 'pulse-outline',         color: '#FFB74D', emoji: '😟' }, // Cam nhạt
   { name: 'Buồn',      value: 'sad',      icon: 'sad-outline',           color: '#64B5F6', emoji: '😢' }, // Xanh dương nhạt
   { name: 'Giận dữ',   value: 'angry',    icon: 'flame-outline',         color: '#E57373', emoji: '😠' }, // Đỏ nhạt
-];
+]
 
 // Tạo một object map để dễ dàng truy cập thông tin cảm xúc bằng 'value'
 // Ví dụ: EMOTIONS_MAP.happy sẽ trả về object của cảm xúc 'Vui vẻ'
 export const EMOTIONS_MAP = EMOTIONS_LIST.reduce((acc, emotion) => {
-  acc[emotion.value] = emotion;
-  return acc;
-}, {});
+  acc[emotion.value] = emotion
+  return acc
+}, {})
 
 // Một đối tượng visual mặc định nếu không tìm thấy cảm xúc
 export const DEFAULT_EMOTION_VISUAL = {
@@ -32,9 +32,9 @@ export const DEFAULT_EMOTION_VISUAL = {
   icon: 'help-circle-outline',
   color: COLORS.TEXT_SECONDARY || '#A0A0A0', // Lấy màu từ theme hoặc màu xám mặc định
   emoji: '❓'
-};
+}
 
 // Hàm tiện ích để lấy thông tin visual của một cảm xúc bằng value
 export const getEmotionVisual = (emotionValue) => {
-  return EMOTIONS_MAP[emotionValue?.toLowerCase()] || DEFAULT_EMOTION_VISUAL;
-};
+  return EMOTIONS_MAP[emotionValue?.toLowerCase()] || DEFAULT_EMOTION_VISUAL
+}

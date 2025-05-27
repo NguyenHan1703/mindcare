@@ -1,25 +1,25 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import COLORS from '../../constants/colors'; // Import màu sắc
+import React from 'react'
+import { View, Text, StyleSheet } from 'react-native'
+import COLORS from '../../constants/colors' // Import màu sắc
 
 const MessageBubble = ({ message, isCurrentUser }) => {
   if (!message || !message.content) {
-    return null; // Không render gì nếu không có tin nhắn hoặc nội dung
+    return null // Không render gì nếu không có tin nhắn hoặc nội dung
   }
 
   const formatTimestamp = (isoTimestamp) => {
-    if (!isoTimestamp) return '';
+    if (!isoTimestamp) return ''
     try {
       // Hiển thị giờ:phút
       return new Date(isoTimestamp).toLocaleTimeString('vi-VN', {
         hour: '2-digit',
         minute: '2-digit',
-      });
+      })
     } catch (error) {
-      console.error('Error formatting timestamp:', error);
-      return '';
+      console.error('Error formatting timestamp:', error)
+      return ''
     }
-  };
+  }
 
   return (
     <View
@@ -42,8 +42,8 @@ const MessageBubble = ({ message, isCurrentUser }) => {
         </Text>
       </View>
     </View>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   bubbleContainer: {
@@ -99,6 +99,6 @@ const styles = StyleSheet.create({
   aiTimestamp: {
     color: COLORS.TEXT_SECONDARY, // Màu chữ phụ cho timestamp của AI
   },
-});
+})
 
-export default MessageBubble;
+export default MessageBubble

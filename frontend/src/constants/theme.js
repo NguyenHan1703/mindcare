@@ -1,10 +1,10 @@
 // src/constants/theme.js
-import { Dimensions } from 'react-native';
+import { Dimensions } from 'react-native'
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window')
 
 // Đơn vị cơ sở cho spacing và các kích thước khác
-const UNIT = 8;
+const UNIT = 8
 
 const THEME = {
   // Kích thước màn hình
@@ -74,6 +74,6 @@ const THEME = {
     MEDIUM: 4,
     LARGE: 8,
   }
-};
+}
 
-export default THEME;
+export default THEME

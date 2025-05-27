@@ -1,5 +1,5 @@
 // src/api/emotion.api.js
-import apiClient from './apiClient';
+import apiClient from './apiClient'
 
 /**
  * Gọi API để ghi nhận hoặc cập nhật cảm xúc hàng ngày của người dùng.
@@ -7,11 +7,11 @@ import apiClient from './apiClient';
  */
 export const logDailyEmotionApi = (emotion) => { // Đổi tên thành logDailyEmotionApi cho nhất quán
   if (!emotion || String(emotion).trim() === '') {
-    console.error("logDailyEmotionApi: emotion là bắt buộc");
-    return Promise.reject(new Error("Cảm xúc không được để trống"));
+    console.error('logDailyEmotionApi: emotion là bắt buộc')
+    return Promise.reject(new Error('Cảm xúc không được để trống'))
   }
-  return apiClient.post('/users/me/emotions/daily', { emotion });
-};
+  return apiClient.post('/users/me/emotions/daily', { emotion })
+}
 
 /**
  * Gọi API để lấy lịch sử chi tiết và thống kê tóm tắt cảm xúc của người dùng hiện tại
@@ -21,8 +21,8 @@ export const logDailyEmotionApi = (emotion) => { // Đổi tên thành logDailyE
  */
 export const getEmotionStatsApi = (startDate, endDate) => { // ✨ HÀM MỚI ✨ //Đổi tên thành getEmotionStatsApi
   if (!startDate || !endDate) {
-    console.error("getEmotionStatsApi: startDate và endDate là bắt buộc");
-    return Promise.reject(new Error("Ngày bắt đầu và kết thúc là bắt buộc"));
+    console.error('getEmotionStatsApi: startDate và endDate là bắt buộc')
+    return Promise.reject(new Error('Ngày bắt đầu và kết thúc là bắt buộc'))
   }
   // API Client sẽ tự động nối các params này vào URL
   return apiClient.get('/users/me/emotions/daily/stats', {
@@ -30,5 +30,5 @@ export const getEmotionStatsApi = (startDate, endDate) => { // ✨ HÀM MỚI �
       startDate: startDate,
       endDate: endDate,
     },
-  });
-};
+  })
+}

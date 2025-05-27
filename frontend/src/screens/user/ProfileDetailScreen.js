@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'
 import {
   View,
   Text,
@@ -11,47 +11,47 @@ import {
   ActivityIndicator,
   Alert,
   Platform,
-} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import * as ImagePicker from 'expo-image-picker'; // Import expo-image-picker
-import { Ionicons } from '@expo/vector-icons';
+} from 'react-native'
+import { useNavigation } from '@react-navigation/native'
+import * as ImagePicker from 'expo-image-picker' // Import expo-image-picker
+import { Ionicons } from '@expo/vector-icons'
 
-import { useAuth } from '../../contexts/AuthContext';
-import COLORS from '../../constants/colors';
-import { updateUserProfileApi } from '../../api/user.api.js'; // Import hàm API
+import { useAuth } from '../../contexts/AuthContext'
+import COLORS from '../../constants/colors'
+import { updateUserProfileApi } from '../../api/user.api.js' // Import hàm API
 
 const ProfileDetailScreen = () => {
-  const navigation = useNavigation();
-  const { state: authState, updateUserInfo, clearError } = useAuth(); // updateUserInfo để cập nhật context
-  const { userInfo } = authState;
+  const navigation = useNavigation()
+  const { state: authState, updateUserInfo, clearError } = useAuth() // updateUserInfo để cập nhật context
+  const { userInfo } = authState
 
-  const [editableUsername, setEditableUsername] = useState(userInfo?.username || '');
-  const [selectedAvatarUri, setSelectedAvatarUri] = useState(userInfo?.avatarUrl || null); // URI của avatar (có thể là local hoặc remote)
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [localError, setLocalError] = useState(null);
-  const [successMessage, setSuccessMessage] = useState('');
+  const [editableUsername, setEditableUsername] = useState(userInfo?.username || '')
+  const [selectedAvatarUri, setSelectedAvatarUri] = useState(userInfo?.avatarUrl || null) // URI của avatar (có thể là local hoặc remote)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [localError, setLocalError] = useState(null)
+  const [successMessage, setSuccessMessage] = useState('')
 
   useEffect(() => {
     // Cập nhật state cục bộ nếu userInfo trong context thay đổi (ví dụ sau khi login)
-    setEditableUsername(userInfo?.username || '');
-    setSelectedAvatarUri(userInfo?.avatarUrl || null);
-  }, [userInfo]);
+    setEditableUsername(userInfo?.username || '')
+    setSelectedAvatarUri(userInfo?.avatarUrl || null)
+  }, [userInfo])
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      clearError(); // Xóa lỗi từ AuthContext
-      setLocalError(null);
-      setSuccessMessage('');
-    });
-    return unsubscribe;
-  }, [navigation, clearError]);
+      clearError() // Xóa lỗi từ AuthContext
+      setLocalError(null)
+      setSuccessMessage('')
+    })
+    return unsubscribe
+  }, [navigation, clearError])
 
   const requestPermissions = async () => {
     if (Platform.OS !== 'web') {
-      const libraryStatus = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      const libraryStatus = await ImagePicker.requestMediaLibraryPermissionsAsync()
       if (libraryStatus.status !== 'granted') {
-        Alert.alert('Cần quyền truy cập', 'Ứng dụng cần quyền truy cập vào thư viện ảnh để bạn có thể chọn avatar.');
-        return false;
+        Alert.alert('Cần quyền truy cập', 'Ứng dụng cần quyền truy cập vào thư viện ảnh để bạn có thể chọn avatar.')
+        return false
       }
       // Có thể yêu cầu thêm quyền camera nếu bạn có chức năng chụp ảnh
       // const cameraStatus = await ImagePicker.requestCameraPermissionsAsync();
@@ -60,39 +60,39 @@ const ProfileDetailScreen = () => {
       //   return false;
       // }
     }
-    return true;
-  };
+    return true
+  }
 
   const handlePickImage = async () => {
-    const hasPermission = await requestPermissions();
-    if (!hasPermission) return;
+    const hasPermission = await requestPermissions()
+    if (!hasPermission) return
 
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [1, 1], // Tỉ lệ vuông cho avatar
       quality: 0.7,   // Chất lượng ảnh (0-1)
-    });
+    })
 
     if (!result.canceled) {
-      setSelectedAvatarUri(result.assets[0].uri); // Lưu URI cục bộ của ảnh đã chọn
-      setSuccessMessage(''); // Xóa thông báo thành công cũ
-      setLocalError(null);  // Xóa lỗi cũ
+      setSelectedAvatarUri(result.assets[0].uri) // Lưu URI cục bộ của ảnh đã chọn
+      setSuccessMessage('') // Xóa thông báo thành công cũ
+      setLocalError(null)  // Xóa lỗi cũ
     }
-  };
+  }
 
   const handleSaveChanges = async () => {
     if (!editableUsername.trim()) {
-      setLocalError('Tên người dùng không được để trống.');
-      return;
+      setLocalError('Tên người dùng không được để trống.')
+      return
     }
 
-    setIsSubmitting(true);
-    setLocalError(null);
-    setSuccessMessage('');
+    setIsSubmitting(true)
+    setLocalError(null)
+    setSuccessMessage('')
 
     // **PHẦN XỬ LÝ UPLOAD AVATAR (HIỆN TẠI LÀ PLACEHOLDER)**
-    let finalAvatarUrl = userInfo?.avatarUrl; // Mặc định là URL cũ
+    let finalAvatarUrl = userInfo?.avatarUrl // Mặc định là URL cũ
 
     if (selectedAvatarUri && selectedAvatarUri !== userInfo?.avatarUrl) {
       // Nếu selectedAvatarUri là một URI cục bộ (file://...)
@@ -105,16 +105,16 @@ const ProfileDetailScreen = () => {
         // Để minh họa, chúng ta sẽ gửi URI đã chọn nếu nó khác URI cũ.
         // Trong dự án thực tế, bạn KHÔNG NÊN gửi file URI trực tiếp trừ khi backend có cơ chế đặc biệt.
         Alert.alert(
-            "Thông báo",
-            "Chức năng upload avatar đang được phát triển. Hiện tại, avatar mới chỉ hiển thị tạm thời trên thiết bị này sau khi lưu."
-        );
-        finalAvatarUrl = selectedAvatarUri; // Gửi URI cục bộ cho mục đích demo (backend sẽ lưu chuỗi này)
+            'Thông báo',
+            'Chức năng upload avatar đang được phát triển. Hiện tại, avatar mới chỉ hiển thị tạm thời trên thiết bị này sau khi lưu.'
+        )
+        finalAvatarUrl = selectedAvatarUri // Gửi URI cục bộ cho mục đích demo (backend sẽ lưu chuỗi này)
                                             // Hoặc bạn có thể quyết định không gửi nếu là file URI:
                                             // finalAvatarUrl = userInfo?.avatarUrl; // Giữ URL cũ
                                             // setLocalError("Chức năng upload avatar chưa hoàn thiện.");
       } else {
         // Nếu selectedAvatarUri đã là một URL (ví dụ người dùng tự dán URL)
-        finalAvatarUrl = selectedAvatarUri;
+        finalAvatarUrl = selectedAvatarUri
       }
     }
 
@@ -122,30 +122,30 @@ const ProfileDetailScreen = () => {
     const profileData = {
       username: editableUsername.trim() === userInfo?.username ? undefined : editableUsername.trim(), // Chỉ gửi nếu thay đổi
       avatarUrl: finalAvatarUrl === userInfo?.avatarUrl ? undefined : finalAvatarUrl, // Chỉ gửi nếu thay đổi
-    };
+    }
 
     // Chỉ gọi API nếu có sự thay đổi thực sự
     if (profileData.username === undefined && profileData.avatarUrl === undefined) {
-      setSuccessMessage("Không có thông tin nào được thay đổi.");
-      setIsSubmitting(false);
-      return;
+      setSuccessMessage('Không có thông tin nào được thay đổi.')
+      setIsSubmitting(false)
+      return
     }
 
     try {
-      const response = await updateUserProfileApi(profileData); // Gọi API
+      const response = await updateUserProfileApi(profileData) // Gọi API
       // Backend trả về UserProfileDto đã cập nhật
-      updateUserInfo(response.data); // Cập nhật userInfo trong AuthContext
-      setSuccessMessage('Cập nhật thông tin thành công!');
-      Alert.alert('Thành công', 'Thông tin cá nhân của bạn đã được cập nhật.');
+      updateUserInfo(response.data) // Cập nhật userInfo trong AuthContext
+      setSuccessMessage('Cập nhật thông tin thành công!')
+      Alert.alert('Thành công', 'Thông tin cá nhân của bạn đã được cập nhật.')
       // navigation.goBack(); // Tùy chọn: tự động quay lại sau khi thành công
     } catch (err) {
-      const errorMessage = err.response?.data?.message || err.message || 'Cập nhật thất bại. Vui lòng thử lại.';
-      setLocalError(errorMessage);
-      Alert.alert('Thất bại', errorMessage);
+      const errorMessage = err.response?.data?.message || err.message || 'Cập nhật thất bại. Vui lòng thử lại.'
+      setLocalError(errorMessage)
+      Alert.alert('Thất bại', errorMessage)
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -210,8 +210,8 @@ const ProfileDetailScreen = () => {
         </View>
       </ScrollView>
     </SafeAreaView>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   safeArea: {
@@ -315,6 +315,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 15,
   },
-});
+})
 
-export default ProfileDetailScreen;
+export default ProfileDetailScreen

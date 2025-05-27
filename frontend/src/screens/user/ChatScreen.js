@@ -1,5 +1,5 @@
 // src/screens/user/ChatScreen.js
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import {
   View,
   Text,
@@ -13,18 +13,18 @@ import {
   SafeAreaView,
   Keyboard,
   Alert,
-} from 'react-native';
-import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+} from 'react-native'
+import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native'
+import { Ionicons, MaterialIcons } from '@expo/vector-icons'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
-import { useAuth } from '../../contexts/AuthContext';
-import * as ROUTES from '../../constants/routes';
-import COLORS from '../../constants/colors';
-import { getConversationMessagesApi, saveUserMessageApi } from '../../api/conversation.api.js';
-import { logDailyEmotionApi } from '../../api/emotion.api.js'; // Đảm bảo tên hàm đúng
-import EmotionPicker from '../../components/user/EmotionPicker'; // Import component thật
-import MessageBubble from '../../components/user/MessageBubble'; // Import component thật
+import { useAuth } from '../../contexts/AuthContext'
+import * as ROUTES from '../../constants/routes'
+import COLORS from '../../constants/colors'
+import { getConversationMessagesApi, saveUserMessageApi } from '../../api/conversation.api.js'
+import { logDailyEmotionApi } from '../../api/emotion.api.js' // Đảm bảo tên hàm đúng
+import EmotionPicker from '../../components/user/EmotionPicker' // Import component thật
+import MessageBubble from '../../components/user/MessageBubble' // Import component thật
 
 // Logger đơn giản
 const logger = {
@@ -32,153 +32,153 @@ const logger = {
   warn: (...args) => console.warn('ChatScreen [WARN]', ...args),
   error: (...args) => console.error('ChatScreen [ERROR]', ...args),
   debug: (...args) => console.log('ChatScreen [DEBUG]', ...args),
-};
+}
 
 const ChatScreen = () => {
-  const navigation = useNavigation();
-  const route = useRoute();
+  const navigation = useNavigation()
+  const route = useRoute()
   // const { state: authState } = useAuth(); // Không cần userInfo trực tiếp ở đây nếu sender chỉ là "USER"
   
-  const { conversationId, conversationTitle } = route.params;
+  const { conversationId, conversationTitle } = route.params
 
-  const [messages, setMessages] = useState([]);
-  const [inputText, setInputText] = useState('');
-  const [isLoadingMessages, setIsLoadingMessages] = useState(true); // Ban đầu là true
-  const [isSendingMessage, setIsSendingMessage] = useState(false);
-  const [error, setError] = useState(null);
+  const [messages, setMessages] = useState([])
+  const [inputText, setInputText] = useState('')
+  const [isLoadingMessages, setIsLoadingMessages] = useState(true) // Ban đầu là true
+  const [isSendingMessage, setIsSendingMessage] = useState(false)
+  const [error, setError] = useState(null)
   
-  const [showEmotionPicker, setShowEmotionPicker] = useState(false);
-  const [dailyEmotionLoggedToday, setDailyEmotionLoggedToday] = useState(false);
-  const [aiAskingForEmotion, setAiAskingForEmotion] = useState(false);
+  const [showEmotionPicker, setShowEmotionPicker] = useState(false)
+  const [dailyEmotionLoggedToday, setDailyEmotionLoggedToday] = useState(false)
+  const [aiAskingForEmotion, setAiAskingForEmotion] = useState(false)
 
-  const flatListRef = useRef(null);
+  const flatListRef = useRef(null)
 
-  const getTodayDateString = () => new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+  const getTodayDateString = () => new Date().toISOString().split('T')[0] // YYYY-MM-DD
 
   // Kiểm tra xem cảm xúc đã được log cho ngày hôm nay chưa từ AsyncStorage
   const checkDailyEmotionLogStatus = async () => {
     try {
-      const loggedDate = await AsyncStorage.getItem(`mindcare_emotion_logged_${getTodayDateString()}`);
+      const loggedDate = await AsyncStorage.getItem(`mindcare_emotion_logged_${getTodayDateString()}`)
       if (loggedDate) {
-        setDailyEmotionLoggedToday(true);
-        setShowEmotionPicker(false); // Nếu đã log rồi thì không hiện picker nữa
-        logger.info('Daily emotion already logged for today.');
+        setDailyEmotionLoggedToday(true)
+        setShowEmotionPicker(false) // Nếu đã log rồi thì không hiện picker nữa
+        logger.info('Daily emotion already logged for today.')
       } else {
-        setDailyEmotionLoggedToday(false);
-        logger.info('Daily emotion not yet logged for today.');
+        setDailyEmotionLoggedToday(false)
+        logger.info('Daily emotion not yet logged for today.')
       }
     } catch (e) {
-      logger.error('Error reading daily emotion log status from AsyncStorage:', e);
-      setDailyEmotionLoggedToday(false); // Mặc định là chưa log nếu có lỗi
+      logger.error('Error reading daily emotion log status from AsyncStorage:', e)
+      setDailyEmotionLoggedToday(false) // Mặc định là chưa log nếu có lỗi
     }
-  };
+  }
 
   // Logic nhận diện AI hỏi cảm xúc (có thể cải thiện thêm)
   const detectAIAskingForEmotion = (allMessages) => {
     if (dailyEmotionLoggedToday || !allMessages || allMessages.length === 0) {
-      setAiAskingForEmotion(false);
-      return false;
+      setAiAskingForEmotion(false)
+      return false
     }
-    const lastMessage = allMessages[allMessages.length - 1];
+    const lastMessage = allMessages[allMessages.length - 1]
     if (lastMessage && lastMessage.sender === 'AI') {
-      const aiText = lastMessage.content.toLowerCase();
-      const keywords = ['bạn cảm thấy thế nào', 'cảm xúc của bạn', 'chia sẻ cảm xúc', 'thấy sao', 'tâm trạng hôm nay'];
-      const isAsking = keywords.some(keyword => aiText.includes(keyword));
+      const aiText = lastMessage.content.toLowerCase()
+      const keywords = ['bạn cảm thấy thế nào', 'cảm xúc của bạn', 'chia sẻ cảm xúc', 'thấy sao', 'tâm trạng hôm nay']
+      const isAsking = keywords.some(keyword => aiText.includes(keyword))
       if (isAsking) {
-        logger.info("AI seems to be asking for emotion.");
-        setAiAskingForEmotion(true);
-        return true;
+        logger.info('AI seems to be asking for emotion.')
+        setAiAskingForEmotion(true)
+        return true
       }
     }
-    setAiAskingForEmotion(false);
-    return false;
-  };
+    setAiAskingForEmotion(false)
+    return false
+  }
 
   const fetchMessages = async (showLoadingIndicator = true) => {
-    if (showLoadingIndicator && messages.length === 0) setIsLoadingMessages(true); // Chỉ loading to nếu chưa có tin nhắn nào
-    setError(null);
+    if (showLoadingIndicator && messages.length === 0) setIsLoadingMessages(true) // Chỉ loading to nếu chưa có tin nhắn nào
+    setError(null)
     try {
-      const response = await getConversationMessagesApi(conversationId);
-      const fetchedMessages = response.data || [];
-      setMessages(fetchedMessages);
+      const response = await getConversationMessagesApi(conversationId)
+      const fetchedMessages = response.data || []
+      setMessages(fetchedMessages)
       // Sau khi tải tin nhắn, kiểm tra xem AI có hỏi cảm xúc không VÀ cảm xúc hôm nay chưa được log
       if (!dailyEmotionLoggedToday) {
-        const shouldShowPicker = detectAIAskingForEmotion(fetchedMessages);
-        setShowEmotionPicker(shouldShowPicker);
+        const shouldShowPicker = detectAIAskingForEmotion(fetchedMessages)
+        setShowEmotionPicker(shouldShowPicker)
       } else {
-        setShowEmotionPicker(false); // Đảm bảo picker ẩn nếu đã log
+        setShowEmotionPicker(false) // Đảm bảo picker ẩn nếu đã log
       }
     } catch (err) {
-      logger.error("Lỗi khi tải tin nhắn:", err.response?.data?.message || err.message);
-      setError('Không thể tải tin nhắn. Vui lòng thử lại.');
+      logger.error('Lỗi khi tải tin nhắn:', err.response?.data?.message || err.message)
+      setError('Không thể tải tin nhắn. Vui lòng thử lại.')
     } finally {
-      if (showLoadingIndicator) setIsLoadingMessages(false);
+      if (showLoadingIndicator) setIsLoadingMessages(false)
     }
-  };
+  }
 
   useFocusEffect(
     useCallback(() => {
       if (conversationId) {
-        logger.info(`ChatScreen focused for ConvID: ${conversationId}.`);
-        checkDailyEmotionLogStatus(); // Kiểm tra trạng thái log cảm xúc mỗi khi vào màn hình
-        fetchMessages();
+        logger.info(`ChatScreen focused for ConvID: ${conversationId}.`)
+        checkDailyEmotionLogStatus() // Kiểm tra trạng thái log cảm xúc mỗi khi vào màn hình
+        fetchMessages()
       }
       return () => {
-        logger.info(`ChatScreen unfocused for ConvID: ${conversationId}.`);
+        logger.info(`ChatScreen unfocused for ConvID: ${conversationId}.`)
         // Có thể reset một số state ở đây nếu cần
-      };
+      }
     }, [conversationId]) // Thêm fetchMessages vào dependencies nếu nó ổn định
-  );
+  )
   
   useEffect(() => {
     if (flatListRef.current && messages.length > 0) {
-      flatListRef.current.scrollToEnd({ animated: true });
+      flatListRef.current.scrollToEnd({ animated: true })
     }
-  }, [messages]);
+  }, [messages])
 
   const handleSendMessage = async () => {
-    if (!inputText.trim()) return;
+    if (!inputText.trim()) return
 
-    const messageContent = inputText.trim();
-    setInputText('');
-    setIsSendingMessage(true);
-    setError(null);
-    setShowEmotionPicker(false); // Khi người dùng chủ động chat, ẩn picker
+    const messageContent = inputText.trim()
+    setInputText('')
+    setIsSendingMessage(true)
+    setError(null)
+    setShowEmotionPicker(false) // Khi người dùng chủ động chat, ẩn picker
 
-    const tempUserMessageId = `temp-user-${Date.now()}`;
+    const tempUserMessageId = `temp-user-${Date.now()}`
     const optimisticUserMessage = {
       id: tempUserMessageId,
       conversationId,
       sender: 'USER',
       content: messageContent,
       timestamp: new Date().toISOString(),
-    };
-    setMessages(prevMessages => [...prevMessages, optimisticUserMessage]);
+    }
+    setMessages(prevMessages => [...prevMessages, optimisticUserMessage])
 
     try {
-      await saveUserMessageApi(conversationId, messageContent);
-      logger.info(`User message sent for ConvID: ${conversationId}. Fetching updated messages.`);
-      await fetchMessages(false); // Tải lại để có tin nhắn user thật và phản hồi AI
+      await saveUserMessageApi(conversationId, messageContent)
+      logger.info(`User message sent for ConvID: ${conversationId}. Fetching updated messages.`)
+      await fetchMessages(false) // Tải lại để có tin nhắn user thật và phản hồi AI
     } catch (err) {
-      logger.error("Lỗi khi gửi tin nhắn:", err.response?.data?.message || err.message);
-      setError('Không thể gửi tin nhắn. Vui lòng thử lại.');
-      setMessages(prevMessages => prevMessages.filter(msg => msg.id !== tempUserMessageId)); // Xóa tin nhắn tạm nếu lỗi
-      Alert.alert('Lỗi', 'Không thể gửi tin nhắn của bạn.');
+      logger.error('Lỗi khi gửi tin nhắn:', err.response?.data?.message || err.message)
+      setError('Không thể gửi tin nhắn. Vui lòng thử lại.')
+      setMessages(prevMessages => prevMessages.filter(msg => msg.id !== tempUserMessageId)) // Xóa tin nhắn tạm nếu lỗi
+      Alert.alert('Lỗi', 'Không thể gửi tin nhắn của bạn.')
     } finally {
-      setIsSendingMessage(false);
+      setIsSendingMessage(false)
     }
-  };
+  }
 
   const handleEmotionSelected = async (emotionValue) => {
-    logger.info(`User selected emotion: ${emotionValue}`);
-    setShowEmotionPicker(false); // Ẩn picker ngay
+    logger.info(`User selected emotion: ${emotionValue}`)
+    setShowEmotionPicker(false) // Ẩn picker ngay
     
     try {
-      await logDailyEmotionApi(emotionValue); // Gọi API lưu cảm xúc
-      await AsyncStorage.setItem(`mindcare_emotion_logged_${getTodayDateString()}`, 'true'); // Đánh dấu đã log hôm nay
-      setDailyEmotionLoggedToday(true); // Cập nhật state
+      await logDailyEmotionApi(emotionValue) // Gọi API lưu cảm xúc
+      await AsyncStorage.setItem(`mindcare_emotion_logged_${getTodayDateString()}`, 'true') // Đánh dấu đã log hôm nay
+      setDailyEmotionLoggedToday(true) // Cập nhật state
       
-      Alert.alert('Thông báo', `Đã ghi nhận cảm xúc: ${emotionValue}`);
+      Alert.alert('Thông báo', `Đã ghi nhận cảm xúc: ${emotionValue}`)
       
       // (Tùy chọn) Thêm tin nhắn xác nhận vào cuộc hội thoại
       const confirmMessage = {
@@ -187,32 +187,32 @@ const ChatScreen = () => {
         sender: 'USER', // Hoặc một sender đặc biệt như 'SYSTEM_MESSAGE' nếu bạn muốn style khác
         content: `(Tôi đã ghi nhận cảm xúc hôm nay là: ${emotionValue})`,
         timestamp: new Date().toISOString(),
-      };
-      setMessages(prevMessages => [...prevMessages, confirmMessage]);
+      }
+      setMessages(prevMessages => [...prevMessages, confirmMessage])
       // Bạn có thể không cần gọi fetchMessages() lại ngay lập tức ở đây,
       // vì tin nhắn này chỉ mang tính thông báo cho user trên UI.
       // AI sẽ không thấy tin nhắn này trừ khi bạn gửi nó lên server.
 
     } catch (err) {
-      logger.error("Lỗi khi ghi nhận cảm xúc:", err.response?.data?.message || err.message);
-      Alert.alert('Lỗi', 'Không thể ghi nhận cảm xúc của bạn. Vui lòng thử lại.');
+      logger.error('Lỗi khi ghi nhận cảm xúc:', err.response?.data?.message || err.message)
+      Alert.alert('Lỗi', 'Không thể ghi nhận cảm xúc của bạn. Vui lòng thử lại.')
       // Không set dailyEmotionLoggedToday = false ở đây, để tránh việc picker hiện lại ngay nếu AI vẫn hỏi.
       // Người dùng có thể thử lại bằng cách tương tác với picker lần nữa nếu nó vẫn hiện (do AI hỏi).
     }
-  };
+  }
 
   const renderItem = ({ item }) => (
     <MessageBubble
       message={item}
       isCurrentUser={item.sender === 'USER'}
     />
-  );
+  )
 
   useEffect(() => {
     navigation.setOptions({
       title: conversationTitle || 'Hội thoại',
-    });
-  }, [navigation, conversationTitle]);
+    })
+  }, [navigation, conversationTitle])
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -280,8 +280,8 @@ const ChatScreen = () => {
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   safeArea: {
@@ -362,6 +362,6 @@ const styles = StyleSheet.create({
   sendButtonDisabled: {
     backgroundColor: COLORS.DISABLED,
   },
-});
+})
 
-export default ChatScreen;
+export default ChatScreen

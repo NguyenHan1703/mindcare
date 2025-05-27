@@ -1,23 +1,23 @@
 // src/components/user/EmotionPicker.js
-import React from 'react';
+import React from 'react'
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView }
-from 'react-native';
+from 'react-native'
 // Nếu không dùng Ionicons nữa, bạn có thể xóa dòng import này
 // import { Ionicons } from '@expo/vector-icons'; 
-import COLORS from '../../constants/colors';
-import { EMOTIONS_LIST } from '../../constants/emotionDefinitions'; // Import từ file định nghĩa chung
+import COLORS from '../../constants/colors'
+import { EMOTIONS_LIST } from '../../constants/emotionDefinitions' // Import từ file định nghĩa chung
 
 const EmotionPicker = ({ isVisible, onEmotionSelect, promptMessage }) => {
   if (!isVisible) {
-    return null; // Không render gì nếu không visible
+    return null // Không render gì nếu không visible
   }
 
   const handleSelect = (emotionValue) => {
     if (onEmotionSelect) {
-      onEmotionSelect(emotionValue);
+      onEmotionSelect(emotionValue)
       // Component này không tự ẩn. Việc ẩn/hiện sẽ do ChatScreen quản lý thông qua prop isVisible.
     }
-  };
+  }
 
   return (
     <View style={styles.container}>
@@ -45,8 +45,8 @@ const EmotionPicker = ({ isVisible, onEmotionSelect, promptMessage }) => {
         ))}
       </ScrollView>
     </View>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -84,6 +84,6 @@ const styles = StyleSheet.create({
     marginTop: 5,
     textAlign: 'center',
   },
-});
+})
 
-export default EmotionPicker;
+export default EmotionPicker

@@ -1,7 +1,7 @@
 // src/theme/globalStyles.js
-import { StyleSheet, Platform } from 'react-native';
-import COLORS from '../constants/colors';
-import THEME from '../constants/theme';
+import { StyleSheet, Platform } from 'react-native'
+import COLORS from '../constants/colors'
+import THEME from '../constants/theme'
 
 export const globalStyles = StyleSheet.create({
   // --- Containers ---
@@ -152,7 +152,7 @@ export const globalStyles = StyleSheet.create({
     fontWeight: THEME.FONT_WEIGHTS.BOLD,
     color: COLORS.TEXT_PRIMARY,
   },
-});
+})
 
 // Bạn có thể export riêng lẻ các style object nếu muốn
 // export const { container, titleText, ... } = globalStyles;

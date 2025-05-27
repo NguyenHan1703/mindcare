@@ -1,7 +1,7 @@
 // QUAN TRỌNG: CHỌN ĐÚNG BASE URL CHO MÔI TRƯỜNG CỦA BẠN
 // 1. NẾU CHẠY BACKEND TRÊN CÙNG MÁY VỚI ANDROID EMULATOR:
 // Sử dụng địa chỉ IP đặc biệt 10.0.2.2 để trỏ đến localhost của máy host.
-const API_BASE_URL = 'http://10.0.2.2:8080/api';
+const API_BASE_URL = 'http://10.0.2.2:8080/api'
 
 // 2. NẾU CHẠY BACKEND TRÊN CÙNG MÁY VỚI IOS SIMULATOR:
 // iOS Simulator có thể truy cập localhost của máy host trực tiếp.
@@ -29,4 +29,4 @@ const API_BASE_URL = 'http://10.0.2.2:8080/api';
 // Nếu không chắc, bạn có thể bắt đầu với 'http://localhost:8080/api' nếu dùng iOS Simulator
 // hoặc 'http://10.0.2.2:8080/api' nếu dùng Android Emulator.
 
-export { API_BASE_URL };
+export { API_BASE_URL }

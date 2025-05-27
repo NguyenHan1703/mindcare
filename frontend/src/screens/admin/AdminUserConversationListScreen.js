@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react'
 import {
   View,
   Text,
@@ -7,64 +7,64 @@ import {
   ActivityIndicator,
   TouchableOpacity, // Cho nút thử lại
   SafeAreaView,
-} from 'react-native';
-import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
-import { MaterialIcons } from '@expo/vector-icons';
+} from 'react-native'
+import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native'
+import { MaterialIcons } from '@expo/vector-icons'
 
-import COLORS from '../../constants/colors';
-import * as ROUTES from '../../constants/routes';
-import { getUserConversationsForAdminApi } from '../../api/admin.api.js';
-import ConversationItem from '../../components/user/ConversationItem'; // Tái sử dụng component này
+import COLORS from '../../constants/colors'
+import * as ROUTES from '../../constants/routes'
+import { getUserConversationsForAdminApi } from '../../api/admin.api.js'
+import ConversationItem from '../../components/user/ConversationItem' // Tái sử dụng component này
 
 // Logger đơn giản
 const logger = {
   info: (...args) => console.log('AdminUserConversationListScreen [INFO]', ...args),
   warn: (...args) => console.warn('AdminUserConversationListScreen [WARN]', ...args),
   error: (...args) => console.error('AdminUserConversationListScreen [ERROR]', ...args),
-};
+}
 
 const AdminUserConversationListScreen = () => {
-  const navigation = useNavigation();
-  const route = useRoute();
-  const { targetUserId, targetUsername } = route.params;
+  const navigation = useNavigation()
+  const route = useRoute()
+  const { targetUserId, targetUsername } = route.params
 
-  const [conversations, setConversations] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [conversations, setConversations] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   // Đặt tiêu đề động cho header
   useEffect(() => {
     navigation.setOptions({
       title: `Hội thoại của ${targetUsername || 'Người dùng'}`,
-    });
-  }, [navigation, targetUsername]);
+    })
+  }, [navigation, targetUsername])
 
   const fetchUserConversations = useCallback(async (showLoadingIndicator = true) => {
     if (!targetUserId) {
-      setError("Không có thông tin người dùng để tải hội thoại.");
-      setIsLoading(false);
-      return;
+      setError('Không có thông tin người dùng để tải hội thoại.')
+      setIsLoading(false)
+      return
     }
-    if (showLoadingIndicator) setIsLoading(true);
-    setError(null);
+    if (showLoadingIndicator) setIsLoading(true)
+    setError(null)
     try {
-      logger.info(`Workspaceing conversations for targetUserID: ${targetUserId}`);
-      const response = await getUserConversationsForAdminApi(targetUserId);
-      setConversations(response.data || []);
+      logger.info(`Workspaceing conversations for targetUserID: ${targetUserId}`)
+      const response = await getUserConversationsForAdminApi(targetUserId)
+      setConversations(response.data || [])
     } catch (err) {
-      logger.error("Lỗi khi tải danh sách hội thoại của người dùng (admin view):", err.response?.data?.message || err.message);
-      setError('Không thể tải danh sách hội thoại. Vui lòng thử lại.');
-      setConversations([]);
+      logger.error('Lỗi khi tải danh sách hội thoại của người dùng (admin view):', err.response?.data?.message || err.message)
+      setError('Không thể tải danh sách hội thoại. Vui lòng thử lại.')
+      setConversations([])
     } finally {
-      if (showLoadingIndicator) setIsLoading(false);
+      if (showLoadingIndicator) setIsLoading(false)
     }
-  }, [targetUserId]);
+  }, [targetUserId])
 
   useFocusEffect(
     useCallback(() => {
-      fetchUserConversations();
+      fetchUserConversations()
     }, [fetchUserConversations])
-  );
+  )
 
   const handleNavigateToChatView = (conversationId, title) => {
     navigation.navigate(ROUTES.ADMIN_USER_CHAT_VIEW_SCREEN, {
@@ -72,8 +72,8 @@ const AdminUserConversationListScreen = () => {
       conversationTitle: title,
       targetUserId, // Truyền lại để ChatView biết user nào
       targetUsername, // Truyền lại để ChatView có thể hiển thị tên user nếu cần
-    });
-  };
+    })
+  }
 
   const renderConversationItem = ({ item }) => (
     <ConversationItem
@@ -84,7 +84,7 @@ const AdminUserConversationListScreen = () => {
       // Không truyền prop 'onDelete' để admin không thể xóa từ màn hình này
       // ConversationItem.js nên được thiết kế để ẩn nút xóa nếu onDelete không được cung cấp
     />
-  );
+  )
 
   if (isLoading) {
     return (
@@ -94,7 +94,7 @@ const AdminUserConversationListScreen = () => {
           <Text style={styles.loadingText}>Đang tải danh sách hội thoại...</Text>
         </View>
       </SafeAreaView>
-    );
+    )
   }
 
   if (error) {
@@ -108,7 +108,7 @@ const AdminUserConversationListScreen = () => {
           </TouchableOpacity>
         </View>
       </SafeAreaView>
-    );
+    )
   }
 
   if (conversations.length === 0) {
@@ -119,7 +119,7 @@ const AdminUserConversationListScreen = () => {
           <Text style={styles.emptyMessage}>Người dùng này chưa có cuộc hội thoại nào.</Text>
         </View>
       </SafeAreaView>
-    );
+    )
   }
 
   return (
@@ -133,8 +133,8 @@ const AdminUserConversationListScreen = () => {
         refreshing={isLoading}
       />
     </SafeAreaView>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   safeArea: {
@@ -177,6 +177,6 @@ const styles = StyleSheet.create({
     color: COLORS.WHITE,
     fontSize: 16,
   },
-});
+})
 
-export default AdminUserConversationListScreen;
+export default AdminUserConversationListScreen

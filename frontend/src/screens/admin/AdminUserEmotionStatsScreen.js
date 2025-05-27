@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import {
   View,
   Text,
@@ -8,18 +8,18 @@ import {
   SafeAreaView,
   Dimensions,
   TouchableOpacity,
-} from 'react-native';
-import { Calendar, LocaleConfig } from 'react-native-calendars';
-import { BarChart } from "react-native-chart-kit";
-import { Ionicons, MaterialIcons } from '@expo/vector-icons'; // Import MaterialIcons
+} from 'react-native'
+import { Calendar, LocaleConfig } from 'react-native-calendars'
+import { BarChart } from 'react-native-chart-kit'
+import { Ionicons, MaterialIcons } from '@expo/vector-icons' // Import MaterialIcons
 
-import COLORS from '../../constants/colors';
+import COLORS from '../../constants/colors'
 import {
     EMOTIONS_LIST,
     getEmotionVisual
-} from '../../constants/emotionDefinitions';
-import { getUserEmotionStatsForAdminApi } from '../../api/admin.api.js'; // Sử dụng API của admin
-import { useNavigation, useRoute } from '@react-navigation/native';
+} from '../../constants/emotionDefinitions'
+import { getUserEmotionStatsForAdminApi } from '../../api/admin.api.js' // Sử dụng API của admin
+import { useNavigation, useRoute } from '@react-navigation/native'
 
 // Cấu hình tiếng Việt cho lịch (nếu chưa làm ở đâu đó global)
 if (!LocaleConfig.locales['vi']) {
@@ -29,115 +29,115 @@ if (!LocaleConfig.locales['vi']) {
         dayNames: ['Chủ Nhật','Thứ Hai','Thứ Ba','Thứ Tư','Thứ Năm','Thứ Sáu','Thứ Bảy'],
         dayNamesShort: ['CN','T2','T3','T4','T5','T6','T7'],
         today: 'Hôm nay'
-    };
-    LocaleConfig.defaultLocale = 'vi';
+    }
+    LocaleConfig.defaultLocale = 'vi'
 }
 
-const screenWidth = Dimensions.get("window").width;
+const screenWidth = Dimensions.get('window').width
 
 // Logger đơn giản
 const logger = {
   info: (...args) => console.log('AdminUserEmotionStatsScreen [INFO]', ...args),
   warn: (...args) => console.warn('AdminUserEmotionStatsScreen [WARN]', ...args),
   error: (...args) => console.error('AdminUserEmotionStatsScreen [ERROR]', ...args),
-};
+}
 
 const AdminUserEmotionStatsScreen = () => {
-  const navigation = useNavigation();
-  const route = useRoute();
-  const { targetUserId, targetUsername } = route.params;
+  const navigation = useNavigation()
+  const route = useRoute()
+  const { targetUserId, targetUsername } = route.params
 
-  const [currentMonthDate, setCurrentMonthDate] = useState(new Date());
-  const [markedDates, setMarkedDates] = useState({});
-  const [emotionSummary, setEmotionSummary] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [currentMonthDate, setCurrentMonthDate] = useState(new Date())
+  const [markedDates, setMarkedDates] = useState({})
+  const [emotionSummary, setEmotionSummary] = useState({})
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     navigation.setOptions({
       title: `Thống kê: ${targetUsername || 'Người dùng'}`,
-    });
-  }, [navigation, targetUsername]);
+    })
+  }, [navigation, targetUsername])
 
   const fetchStatsForMonth = useCallback(async (dateToFetch) => {
     if (!targetUserId) {
-        setError("Không có thông tin người dùng để tải thống kê.");
-        setIsLoading(false);
-        return;
+        setError('Không có thông tin người dùng để tải thống kê.')
+        setIsLoading(false)
+        return
     }
-    setIsLoading(true);
-    setError(null);
+    setIsLoading(true)
+    setError(null)
 
-    const year = dateToFetch.getFullYear();
-    const month = dateToFetch.getMonth() + 1;
-    const firstDayOfMonth = new Date(year, month - 1, 1);
-    const lastDayOfMonth = new Date(year, month, 0);
-    const formatDateForApi = (d) => d.toISOString().split('T')[0];
+    const year = dateToFetch.getFullYear()
+    const month = dateToFetch.getMonth() + 1
+    const firstDayOfMonth = new Date(year, month - 1, 1)
+    const lastDayOfMonth = new Date(year, month, 0)
+    const formatDateForApi = (d) => d.toISOString().split('T')[0]
 
-    logger.info(`Admin fetching emotion stats for UserID: ${targetUserId}, Month: ${year}-${month}`);
+    logger.info(`Admin fetching emotion stats for UserID: ${targetUserId}, Month: ${year}-${month}`)
 
     try {
       const response = await getUserEmotionStatsForAdminApi(
         targetUserId,
         formatDateForApi(firstDayOfMonth),
         formatDateForApi(lastDayOfMonth)
-      );
-      const statsData = response.data;
+      )
+      const statsData = response.data
 
-      const newMarkedDates = {};
+      const newMarkedDates = {}
       if (statsData && statsData.dailyLogs) {
         statsData.dailyLogs.forEach(log => {
-          const visual = getEmotionVisual(log.emotion);
+          const visual = getEmotionVisual(log.emotion)
           newMarkedDates[log.logDate] = {
             dots: [{ key: log.emotion, color: visual.color, selectedDotColor: visual.color }],
-          };
-        });
+          }
+        })
       }
-      setMarkedDates(newMarkedDates);
-      setEmotionSummary(statsData?.emotionSummary || {});
+      setMarkedDates(newMarkedDates)
+      setEmotionSummary(statsData?.emotionSummary || {})
 
     } catch (err) {
-      logger.error("Lỗi khi admin tải thống kê cảm xúc:", err.response?.data?.message || err.message);
-      setError('Không thể tải dữ liệu thống kê. Vui lòng thử lại.');
-      setMarkedDates({});
-      setEmotionSummary({});
+      logger.error('Lỗi khi admin tải thống kê cảm xúc:', err.response?.data?.message || err.message)
+      setError('Không thể tải dữ liệu thống kê. Vui lòng thử lại.')
+      setMarkedDates({})
+      setEmotionSummary({})
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  }, [targetUserId]);
+  }, [targetUserId])
 
   useEffect(() => {
-    fetchStatsForMonth(currentMonthDate);
-  }, [currentMonthDate, fetchStatsForMonth]);
+    fetchStatsForMonth(currentMonthDate)
+  }, [currentMonthDate, fetchStatsForMonth])
 
   const onMonthChange = (month) => {
-    logger.info("Month changed by admin to:", month.dateString);
-    setCurrentMonthDate(new Date(month.timestamp));
-  };
+    logger.info('Month changed by admin to:', month.dateString)
+    setCurrentMonthDate(new Date(month.timestamp))
+  }
 
   const chartData = useMemo(() => {
     if (!emotionSummary || Object.keys(emotionSummary).length === 0) {
-      return null;
+      return null
     }
-    const labels = [];
-    const dataValues = [];
-    const barColorsFunc = [];
+    const labels = []
+    const dataValues = []
+    const barColorsFunc = []
 
     EMOTIONS_LIST.forEach(emotionDef => {
         if (emotionSummary[emotionDef.value] !== undefined) {
-            labels.push(emotionDef.name);
-            dataValues.push(emotionSummary[emotionDef.value]);
-            barColorsFunc.push((opacity = 1) => emotionDef.color);
+            labels.push(emotionDef.name)
+            dataValues.push(emotionSummary[emotionDef.value])
+            barColorsFunc.push((opacity = 1) => emotionDef.color)
         }
-    });
+    })
     
-    if (labels.length === 0) return null;
+    if (labels.length === 0) return null
 
     return {
       labels: labels,
       datasets: [{ data: dataValues, colors: barColorsFunc }]
-    };
-  }, [emotionSummary]);
+    }
+  }, [emotionSummary])
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -200,15 +200,15 @@ const AdminUserEmotionStatsScreen = () => {
             <View style={styles.summaryContainer}>
               <Text style={styles.sectionTitle}>Tóm tắt tháng này:</Text>
               {EMOTIONS_LIST.map(emotionDef => {
-                const count = emotionSummary[emotionDef.value];
+                const count = emotionSummary[emotionDef.value]
                 if (count !== undefined && count > 0) {
                   return (
                     <Text key={emotionDef.value} style={[styles.summaryText, { color: getEmotionVisual(emotionDef.value).color || COLORS.TEXT_SECONDARY }]}>
                       {getEmotionVisual(emotionDef.value).name}: {count} lần
                     </Text>
-                  );
+                  )
                 }
-                return null;
+                return null
               })}
             </View>
           )}
@@ -252,8 +252,8 @@ const AdminUserEmotionStatsScreen = () => {
         </View>
       </ScrollView>
     </SafeAreaView>
-  );
-};
+  )
+}
 
 // Styles từ StatisticScreen.js 
 const styles = StyleSheet.create({
@@ -367,6 +367,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginTop: 10,
   }
-});
+})
 
-export default AdminUserEmotionStatsScreen;
+export default AdminUserEmotionStatsScreen

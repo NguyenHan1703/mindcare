@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import {
   View,
   Text,
@@ -7,14 +7,14 @@ import {
   ActivityIndicator,
   TouchableOpacity, // Cho nút thử lại
   SafeAreaView,
-} from 'react-native';
-import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
-import { MaterialIcons } from '@expo/vector-icons';
+} from 'react-native'
+import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native'
+import { MaterialIcons } from '@expo/vector-icons'
 
-import COLORS from '../../constants/colors';
+import COLORS from '../../constants/colors'
 // Giả định hàm này đã được tạo trong admin.api.js (PD #29.1)
-import { getMessagesForConversationByAdminApi } from '../../api/admin.api.js'; 
-import MessageBubble from '../../components/user/MessageBubble'; // Tái sử dụng component này
+import { getMessagesForConversationByAdminApi } from '../../api/admin.api.js' 
+import MessageBubble from '../../components/user/MessageBubble' // Tái sử dụng component này
 // import { useAuth } from '../../contexts/AuthContext'; // Không cần trực tiếp ở đây vì quyền admin đã được kiểm tra ở navigator
 
 // Logger đơn giản
@@ -22,62 +22,62 @@ const logger = {
   info: (...args) => console.log('AdminUserChatViewScreen [INFO]', ...args),
   warn: (...args) => console.warn('AdminUserChatViewScreen [WARN]', ...args),
   error: (...args) => console.error('AdminUserChatViewScreen [ERROR]', ...args),
-};
+}
 
 const AdminUserChatViewScreen = () => {
-  const navigation = useNavigation();
-  const route = useRoute();
+  const navigation = useNavigation()
+  const route = useRoute()
   // targetUserId có thể dùng để log hoặc các mục đích khác nếu cần
-  const { conversationId, conversationTitle, targetUsername, targetUserId } = route.params;
+  const { conversationId, conversationTitle, targetUsername, targetUserId } = route.params
 
-  const [messages, setMessages] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [messages, setMessages] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState(null)
 
-  const flatListRef = useRef(null);
+  const flatListRef = useRef(null)
 
   // Đặt tiêu đề động cho header
   useEffect(() => {
-    const title = conversationTitle || 'Chi tiết hội thoại';
-    const subtitle = targetUsername ? `của ${targetUsername}` : '';
+    const title = conversationTitle || 'Chi tiết hội thoại'
+    const subtitle = targetUsername ? `của ${targetUsername}` : ''
     navigation.setOptions({
       title: `${title} ${subtitle}`.trim(),
-    });
-  }, [navigation, conversationTitle, targetUsername]);
+    })
+  }, [navigation, conversationTitle, targetUsername])
 
   const fetchMessages = useCallback(async (showLoadingIndicator = true) => {
     if (!conversationId) {
-      setError("Không có thông tin hội thoại.");
-      setIsLoading(false);
-      return;
+      setError('Không có thông tin hội thoại.')
+      setIsLoading(false)
+      return
     }
-    if (showLoadingIndicator && messages.length === 0) setIsLoading(true);
-    setError(null);
+    if (showLoadingIndicator && messages.length === 0) setIsLoading(true)
+    setError(null)
     try {
-      logger.info(`Admin fetching messages for ConvID: ${conversationId}`);
+      logger.info(`Admin fetching messages for ConvID: ${conversationId}`)
       // Gọi API admin để lấy tin nhắn
-      const response = await getMessagesForConversationByAdminApi(conversationId);
-      setMessages(response.data || []);
+      const response = await getMessagesForConversationByAdminApi(conversationId)
+      setMessages(response.data || [])
     } catch (err) {
-      logger.error("Lỗi khi admin tải tin nhắn:", err.response?.data?.message || err.message);
-      setError('Không thể tải tin nhắn. Vui lòng thử lại hoặc kiểm tra API backend.');
-      setMessages([]);
+      logger.error('Lỗi khi admin tải tin nhắn:', err.response?.data?.message || err.message)
+      setError('Không thể tải tin nhắn. Vui lòng thử lại hoặc kiểm tra API backend.')
+      setMessages([])
     } finally {
-      if (showLoadingIndicator) setIsLoading(false);
+      if (showLoadingIndicator) setIsLoading(false)
     }
-  }, [conversationId]);
+  }, [conversationId])
 
   useFocusEffect(
     useCallback(() => {
-      fetchMessages();
+      fetchMessages()
     }, [fetchMessages])
-  );
+  )
   
   useEffect(() => {
     if (flatListRef.current && messages.length > 0) {
-      flatListRef.current.scrollToEnd({ animated: false }); // Cuộn xuống không animation cho nhanh
+      flatListRef.current.scrollToEnd({ animated: false }) // Cuộn xuống không animation cho nhanh
     }
-  }, [messages]);
+  }, [messages])
 
   const renderItem = ({ item }) => (
     <MessageBubble
@@ -88,7 +88,7 @@ const AdminUserChatViewScreen = () => {
       // Hiện tại, MessageDto có sender là "USER" hoặc "AI"
       isCurrentUser={item.sender === 'USER'} 
     />
-  );
+  )
 
   if (isLoading) {
     return (
@@ -98,7 +98,7 @@ const AdminUserChatViewScreen = () => {
           <Text style={styles.loadingText}>Đang tải tin nhắn...</Text>
         </View>
       </SafeAreaView>
-    );
+    )
   }
 
   if (error) {
@@ -112,7 +112,7 @@ const AdminUserChatViewScreen = () => {
           </TouchableOpacity>
         </View>
       </SafeAreaView>
-    );
+    )
   }
 
   if (messages.length === 0) {
@@ -123,7 +123,7 @@ const AdminUserChatViewScreen = () => {
           <Text style={styles.emptyMessage}>Không có tin nhắn nào trong cuộc hội thoại này.</Text>
         </View>
       </SafeAreaView>
-    );
+    )
   }
 
   return (
@@ -138,8 +138,8 @@ const AdminUserChatViewScreen = () => {
       />
       {/* Không có ô nhập tin nhắn cho admin ở màn hình này */}
     </SafeAreaView>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   safeArea: {
@@ -183,6 +183,6 @@ const styles = StyleSheet.create({
     color: COLORS.WHITE,
     fontSize: 16,
   },
-});
+})
 
-export default AdminUserChatViewScreen;
+export default AdminUserChatViewScreen

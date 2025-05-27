@@ -1,12 +1,12 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native'; // Import View và Text cho placeholder
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import React from 'react'
+import { View, Text, StyleSheet } from 'react-native' // Import View và Text cho placeholder
+import { createNativeStackNavigator } from '@react-navigation/native-stack'
 
 // Import các hằng số tên màn hình
-import * as ROUTES from '../constants/routes';
-import COLORS from '../constants/colors'; // Để tùy chỉnh header nếu cần
+import * as ROUTES from '../constants/routes'
+import COLORS from '../constants/colors' // Để tùy chỉnh header nếu cần
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator()
 
 // --- Các Component Màn hình Giữ chỗ (Placeholders) ---
 // Các component này sẽ được thay thế bằng các file màn hình thực tế ở các PD sau.
@@ -16,7 +16,7 @@ const PlaceholderScreen = ({ route }) => (
     <Text style={styles.placeholderText}>{route.name}</Text>
     <Text style={styles.placeholderSubText}>(Nội dung màn hình sẽ được xây dựng sau)</Text>
   </View>
-);
+)
 
 // Bạn có thể tạo các placeholder cụ thể hơn nếu muốn, ví dụ:
 // const AdminDashboardScreen = () => <PlaceholderScreen route={{ name: "Admin Dashboard" }} />;
@@ -75,8 +75,8 @@ const AdminNavigator = () => {
         options={{ title: 'Xem hội thoại User' }}
       />
     </Stack.Navigator>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   placeholderContainer: {
@@ -95,6 +95,6 @@ const styles = StyleSheet.create({
     color: COLORS.TEXT_SECONDARY,
     marginTop: 8,
   },
-});
+})
 
-export default AdminNavigator;
+export default AdminNavigator

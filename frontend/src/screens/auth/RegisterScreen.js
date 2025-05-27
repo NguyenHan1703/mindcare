@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'
 import {
   View,
   Text,
@@ -10,70 +10,70 @@ import {
   Platform,
   ScrollView,
   Alert,
-} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { useAuth } from '../../contexts/AuthContext';
-import * as ROUTES from '../../constants/routes';
-import COLORS from '../../constants/colors';
+} from 'react-native'
+import { useNavigation } from '@react-navigation/native'
+import { useAuth } from '../../contexts/AuthContext'
+import * as ROUTES from '../../constants/routes'
+import COLORS from '../../constants/colors'
 
 const RegisterScreen = () => {
-  const navigation = useNavigation();
-  const { register, state: authState, clearError } = useAuth();
+  const navigation = useNavigation()
+  const { register, state: authState, clearError } = useAuth()
 
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      clearError();
+      clearError()
       // Reset form fields if needed when screen is focused
       // setUsername('');
       // setPassword('');
       // setConfirmPassword('');
-    });
-    return unsubscribe;
-  }, [navigation, clearError]);
+    })
+    return unsubscribe
+  }, [navigation, clearError])
 
   const handleInputChange = (setter, value) => {
-    clearError();
-    setter(value);
-  };
+    clearError()
+    setter(value)
+  }
 
   const handleRegister = async () => {
     if (!username.trim() || !password.trim() || !confirmPassword.trim()) {
-      Alert.alert('Lỗi', 'Vui lòng điền đầy đủ thông tin.');
-      return;
+      Alert.alert('Lỗi', 'Vui lòng điền đầy đủ thông tin.')
+      return
     }
     if (password !== confirmPassword) {
-      Alert.alert('Lỗi', 'Mật khẩu và xác nhận mật khẩu không khớp.');
-      return;
+      Alert.alert('Lỗi', 'Mật khẩu và xác nhận mật khẩu không khớp.')
+      return
     }
     // Các validation khác cho độ dài username/password có thể thêm ở đây
     // hoặc dựa vào lỗi trả về từ backend (thông qua DTO validation)
 
-    setIsSubmitting(true);
-    clearError();
+    setIsSubmitting(true)
+    clearError()
 
     try {
-      await register(username, password);
+      await register(username, password)
       Alert.alert(
         'Đăng ký thành công!',
         'Tài khoản của bạn đã được tạo. Vui lòng đăng nhập.',
         [{ text: 'OK', onPress: () => navigation.navigate(ROUTES.LOGIN_SCREEN) }]
-      );
-      setUsername('');
-      setPassword('');
-      setConfirmPassword('');
+      )
+      setUsername('')
+      setPassword('')
+      setConfirmPassword('')
     } catch (error) {
       // Lỗi đã được set trong authState.error bởi AuthContext,
       // hoặc là error.message từ Promise reject
-      Alert.alert('Đăng ký thất bại', authState.error || error.message || 'Đã có lỗi xảy ra.');
+      Alert.alert('Đăng ký thất bại', authState.error || error.message || 'Đã có lỗi xảy ra.')
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
   return (
     <KeyboardAvoidingView
@@ -135,8 +135,8 @@ const RegisterScreen = () => {
           <TouchableOpacity
             style={styles.linkButton}
             onPress={() => {
-              clearError();
-              navigation.navigate(ROUTES.LOGIN_SCREEN);
+              clearError()
+              navigation.navigate(ROUTES.LOGIN_SCREEN)
             }}
           >
             <Text style={styles.linkText}>Đã có tài khoản? Đăng nhập</Text>
@@ -144,8 +144,8 @@ const RegisterScreen = () => {
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   keyboardAvoidingView: {
@@ -210,6 +210,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     textAlign: 'center',
   },
-});
+})
 
-export default RegisterScreen;
+export default RegisterScreen

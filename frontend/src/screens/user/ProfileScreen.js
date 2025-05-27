@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 import {
   View,
   Text,
@@ -8,39 +8,39 @@ import {
   SafeAreaView,
   ScrollView,
   Alert,
-} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { Ionicons, MaterialCommunityIcons, Feather } from '@expo/vector-icons'; // Sử dụng nhiều bộ icon
+} from 'react-native'
+import { useNavigation } from '@react-navigation/native'
+import { Ionicons, MaterialCommunityIcons, Feather } from '@expo/vector-icons' // Sử dụng nhiều bộ icon
 
-import { useAuth } from '../../contexts/AuthContext';
-import * as ROUTES from '../../constants/routes';
-import COLORS from '../../constants/colors';
+import { useAuth } from '../../contexts/AuthContext'
+import * as ROUTES from '../../constants/routes'
+import COLORS from '../../constants/colors'
 
 const ProfileScreen = () => {
-  const navigation = useNavigation();
-  const { state: authState, logout } = useAuth();
-  const { userInfo } = authState;
+  const navigation = useNavigation()
+  const { state: authState, logout } = useAuth()
+  const { userInfo } = authState
 
   const handleLogout = () => {
     Alert.alert(
-      "Xác nhận Đăng xuất",
-      "Bạn có chắc chắn muốn đăng xuất khỏi tài khoản này?",
+      'Xác nhận Đăng xuất',
+      'Bạn có chắc chắn muốn đăng xuất khỏi tài khoản này?',
       [
         {
-          text: "Hủy",
-          style: "cancel"
+          text: 'Hủy',
+          style: 'cancel'
         },
         {
-          text: "Đăng xuất",
+          text: 'Đăng xuất',
           onPress: () => {
-            logout(); // Gọi hàm logout từ AuthContext
+            logout() // Gọi hàm logout từ AuthContext
             // RootNavigator sẽ tự động chuyển về màn hình Login
           },
-          style: "destructive"
+          style: 'destructive'
         }
       ]
-    );
-  };
+    )
+  }
 
   const menuItems = [
     {
@@ -61,7 +61,7 @@ const ProfileScreen = () => {
       action: () => navigation.navigate(ROUTES.STATISTIC_SCREEN),
       route: ROUTES.STATISTIC_SCREEN,
     },
-  ];
+  ]
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -103,8 +103,8 @@ const ProfileScreen = () => {
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   safeArea: {
@@ -189,6 +189,6 @@ const styles = StyleSheet.create({
     color: COLORS.ERROR, // Màu đỏ cho hành động nguy hiểm
     fontWeight: '500',
   },
-});
+})
 
-export default ProfileScreen;
+export default ProfileScreen

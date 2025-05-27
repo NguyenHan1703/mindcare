@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'
 import {
   View,
   Text,
@@ -10,70 +10,70 @@ import {
   Platform,
   ScrollView,
   Alert,
-} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import * as ROUTES from '../../constants/routes';
-import COLORS from '../../constants/colors';
-import { forgotPasswordApi } from '../../api/auth.api'; // Import hàm API
+} from 'react-native'
+import { useNavigation } from '@react-navigation/native'
+import * as ROUTES from '../../constants/routes'
+import COLORS from '../../constants/colors'
+import { forgotPasswordApi } from '../../api/auth.api' // Import hàm API
 
 const ForgotPasswordScreen = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation()
 
-  const [username, setUsername] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmNewPassword, setConfirmNewPassword] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState(null); // State lỗi cục bộ cho màn hình này
-  const [successMessage, setSuccessMessage] = useState('');
+  const [username, setUsername] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmNewPassword, setConfirmNewPassword] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState(null) // State lỗi cục bộ cho màn hình này
+  const [successMessage, setSuccessMessage] = useState('')
 
   // Xóa lỗi khi người dùng bắt đầu nhập liệu
   const handleInputChange = (setter, value) => {
-    setError(null);
-    setSuccessMessage('');
-    setter(value);
-  };
+    setError(null)
+    setSuccessMessage('')
+    setter(value)
+  }
 
   const handleResetPassword = async () => {
     if (!username.trim() || !newPassword.trim() || !confirmNewPassword.trim()) {
-      setError('Vui lòng điền đầy đủ thông tin.');
-      return;
+      setError('Vui lòng điền đầy đủ thông tin.')
+      return
     }
     if (newPassword !== confirmNewPassword) {
-      setError('Mật khẩu mới và xác nhận mật khẩu không khớp.');
-      return;
+      setError('Mật khẩu mới và xác nhận mật khẩu không khớp.')
+      return
     }
     if (newPassword.length < 6) {
-        setError('Mật khẩu mới phải có ít nhất 6 ký tự.');
-        return;
+        setError('Mật khẩu mới phải có ít nhất 6 ký tự.')
+        return
     }
 
-    setIsSubmitting(true);
-    setError(null);
-    setSuccessMessage('');
+    setIsSubmitting(true)
+    setError(null)
+    setSuccessMessage('')
 
     try {
       // Gọi API backend /api/auth/forgot-password
       // Hàm forgotPasswordApi đã được định nghĩa trong src/api/auth.api.js (PD #13.1)
-      const response = await forgotPasswordApi(username, newPassword);
+      const response = await forgotPasswordApi(username, newPassword)
       
       // Giả sử backend trả về message trong response.data nếu thành công
-      setSuccessMessage(response.data.message || 'Đặt lại mật khẩu thành công! Vui lòng đăng nhập.');
+      setSuccessMessage(response.data.message || 'Đặt lại mật khẩu thành công! Vui lòng đăng nhập.')
       Alert.alert(
         'Thành công',
         response.data.message || 'Mật khẩu của bạn đã được đặt lại. Vui lòng đăng nhập.',
         [{ text: 'OK', onPress: () => navigation.navigate(ROUTES.LOGIN_SCREEN) }]
-      );
-      setUsername('');
-      setNewPassword('');
-      setConfirmNewPassword('');
+      )
+      setUsername('')
+      setNewPassword('')
+      setConfirmNewPassword('')
     } catch (err) {
-      const errorMessage = err.response?.data?.message || err.message || 'Đặt lại mật khẩu thất bại. Vui lòng thử lại.';
-      setError(errorMessage);
-      Alert.alert('Thất bại', errorMessage);
+      const errorMessage = err.response?.data?.message || err.message || 'Đặt lại mật khẩu thất bại. Vui lòng thử lại.'
+      setError(errorMessage)
+      Alert.alert('Thất bại', errorMessage)
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
   return (
     <KeyboardAvoidingView
@@ -140,8 +140,8 @@ const ForgotPasswordScreen = () => {
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   keyboardAvoidingView: {
@@ -211,6 +211,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     textAlign: 'center',
   }
-});
+})
 
-export default ForgotPasswordScreen;
+export default ForgotPasswordScreen

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'
 import {
   View,
   Text,
@@ -11,94 +11,94 @@ import {
   ScrollView,
   Alert,
   SafeAreaView,
-} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import COLORS from '../../constants/colors';
-import { changePasswordApi } from '../../api/user.api.js'; // Import hàm API
-import * as ROUTES from '../../constants/routes'; // Import tên routes
+} from 'react-native'
+import { useNavigation } from '@react-navigation/native'
+import COLORS from '../../constants/colors'
+import { changePasswordApi } from '../../api/user.api.js' // Import hàm API
+import * as ROUTES from '../../constants/routes' // Import tên routes
 
 const ChangePasswordScreen = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation()
 
-  const [oldPassword, setOldPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const [oldPassword, setOldPassword] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmNewPassword, setConfirmNewPassword] = useState('')
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState(null);
-  const [successMessage, setSuccessMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState(null)
+  const [successMessage, setSuccessMessage] = useState('')
 
   // Xóa lỗi khi người dùng bắt đầu nhập liệu hoặc màn hình được focus
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      setError(null);
-      setSuccessMessage('');
-    });
-    return unsubscribe;
-  }, [navigation]);
+      setError(null)
+      setSuccessMessage('')
+    })
+    return unsubscribe
+  }, [navigation])
 
   const handleInputChange = (setter, value) => {
-    setError(null);
-    setSuccessMessage('');
-    setter(value);
-  };
+    setError(null)
+    setSuccessMessage('')
+    setter(value)
+  }
 
   const validateInputs = () => {
     if (!oldPassword.trim() || !newPassword.trim() || !confirmNewPassword.trim()) {
-      setError('Vui lòng điền đầy đủ các trường mật khẩu.');
-      return false;
+      setError('Vui lòng điền đầy đủ các trường mật khẩu.')
+      return false
     }
     if (newPassword.length < 6) {
-      setError('Mật khẩu mới phải có ít nhất 6 ký tự.');
-      return false;
+      setError('Mật khẩu mới phải có ít nhất 6 ký tự.')
+      return false
     }
     if (newPassword !== confirmNewPassword) {
-      setError('Mật khẩu mới và xác nhận mật khẩu mới không khớp.');
-      return false;
+      setError('Mật khẩu mới và xác nhận mật khẩu mới không khớp.')
+      return false
     }
-    setError(null); // Xóa lỗi nếu tất cả đều hợp lệ
-    return true;
-  };
+    setError(null) // Xóa lỗi nếu tất cả đều hợp lệ
+    return true
+  }
 
   const handleChangePassword = async () => {
     if (!validateInputs()) {
-      return;
+      return
     }
 
-    setIsSubmitting(true);
-    setSuccessMessage(''); // Xóa thông báo thành công cũ
+    setIsSubmitting(true)
+    setSuccessMessage('') // Xóa thông báo thành công cũ
 
     try {
       const passwordData = {
         oldPassword,
         newPassword,
         confirmNewPassword, // Backend DTO cũng có trường này
-      };
-      const response = await changePasswordApi(passwordData);
+      }
+      const response = await changePasswordApi(passwordData)
 
       // Backend thường trả về MessageResponse cho hành động này
-      const message = response.data?.message || 'Đổi mật khẩu thành công!';
-      setSuccessMessage(message);
+      const message = response.data?.message || 'Đổi mật khẩu thành công!'
+      setSuccessMessage(message)
       Alert.alert(
         'Thành công',
         message,
         [
           { text: 'OK', onPress: () => navigation.goBack() } // Quay lại màn hình Profile
         ]
-      );
+      )
       // Xóa các trường sau khi thành công
-      setOldPassword('');
-      setNewPassword('');
-      setConfirmNewPassword('');
+      setOldPassword('')
+      setNewPassword('')
+      setConfirmNewPassword('')
 
     } catch (err) {
-      const errorMessage = err.response?.data?.message || err.message || 'Đổi mật khẩu thất bại. Vui lòng thử lại.';
-      setError(errorMessage);
-      Alert.alert('Thất bại', errorMessage);
+      const errorMessage = err.response?.data?.message || err.message || 'Đổi mật khẩu thất bại. Vui lòng thử lại.'
+      setError(errorMessage)
+      Alert.alert('Thất bại', errorMessage)
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
   // UserNavigator đã đặt title cho màn hình này là "Đổi mật khẩu"
   // Nút "< Quay lại" cũng do Stack Navigator tự động cung cấp.
@@ -165,8 +165,8 @@ const ChangePasswordScreen = () => {
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   safeArea: {
@@ -234,6 +234,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 15,
   }
-});
+})
 
-export default ChangePasswordScreen;
+export default ChangePasswordScreen

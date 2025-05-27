@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import {
   View,
   Text,
@@ -8,17 +8,17 @@ import {
   SafeAreaView,
   Dimensions,
   TouchableOpacity, // Thêm TouchableOpacity cho nút thử lại
-} from 'react-native';
-import { Calendar, LocaleConfig } from 'react-native-calendars';
-import { BarChart } from "react-native-chart-kit";
-import { Ionicons } from '@expo/vector-icons'; // Vẫn cần cho icon trong chú thích
+} from 'react-native'
+import { Calendar, LocaleConfig } from 'react-native-calendars'
+import { BarChart } from 'react-native-chart-kit'
+import { Ionicons } from '@expo/vector-icons' // Vẫn cần cho icon trong chú thích
 
-import COLORS from '../../constants/colors';
+import COLORS from '../../constants/colors'
 import { 
     EMOTIONS_LIST, // Dùng cho chú thích
     getEmotionVisual // Dùng để lấy thông tin visual của cảm xúc
-} from '../../constants/emotionDefinitions';
-import { getEmotionStats } from '../../api/emotion.api.js';
+} from '../../constants/emotionDefinitions'
+import { getEmotionStats } from '../../api/emotion.api.js'
 // import { useAuth } from '../../contexts/AuthContext'; // Không cần userId nếu API /me
 
 // Cấu hình tiếng Việt cho lịch (nếu chưa làm ở đâu đó global)
@@ -29,49 +29,49 @@ if (!LocaleConfig.locales['vi']) {
         dayNames: ['Chủ Nhật','Thứ Hai','Thứ Ba','Thứ Tư','Thứ Năm','Thứ Sáu','Thứ Bảy'],
         dayNamesShort: ['CN','T2','T3','T4','T5','T6','T7'],
         today: 'Hôm nay'
-    };
-    LocaleConfig.defaultLocale = 'vi';
+    }
+    LocaleConfig.defaultLocale = 'vi'
 }
 
 
-const screenWidth = Dimensions.get("window").width;
+const screenWidth = Dimensions.get('window').width
 
 const StatisticScreen = () => {
   // const { state: authState } = useAuth();
   // const userId = authState.userInfo?.id;
 
-  const [currentMonthDate, setCurrentMonthDate] = useState(new Date());
-  const [markedDates, setMarkedDates] = useState({});
-  const [emotionSummary, setEmotionSummary] = useState({}); // Khởi tạo là object rỗng
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [currentMonthDate, setCurrentMonthDate] = useState(new Date())
+  const [markedDates, setMarkedDates] = useState({})
+  const [emotionSummary, setEmotionSummary] = useState({}) // Khởi tạo là object rỗng
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState(null)
 
   const fetchStatsForMonth = useCallback(async (dateToFetch) => {
-    setIsLoading(true);
-    setError(null);
+    setIsLoading(true)
+    setError(null)
     // setMarkedDates({}); // Không reset ở đây để tránh nhấp nháy khi chuyển tháng nhanh
     // setEmotionSummary({});
 
-    const year = dateToFetch.getFullYear();
-    const month = dateToFetch.getMonth() + 1;
+    const year = dateToFetch.getFullYear()
+    const month = dateToFetch.getMonth() + 1
 
-    const firstDayOfMonth = new Date(year, month - 1, 1);
-    const lastDayOfMonth = new Date(year, month, 0);
+    const firstDayOfMonth = new Date(year, month - 1, 1)
+    const lastDayOfMonth = new Date(year, month, 0)
 
-    const formatDateForApi = (d) => d.toISOString().split('T')[0];
+    const formatDateForApi = (d) => d.toISOString().split('T')[0]
 
-    logger.info(`Workspaceing stats for month: ${formatDateForApi(firstDayOfMonth)} to ${formatDateForApi(lastDayOfMonth)}`);
+    logger.info(`Workspaceing stats for month: ${formatDateForApi(firstDayOfMonth)} to ${formatDateForApi(lastDayOfMonth)}`)
 
     try {
       // API getEmotionStats của bạn đã được thiết kế để lấy cho người dùng hiện tại (qua token)
-      const response = await getEmotionStats(formatDateForApi(firstDayOfMonth), formatDateForApi(lastDayOfMonth));
-      const statsData = response.data; // { dailyLogs: [], emotionSummary: {} }
+      const response = await getEmotionStats(formatDateForApi(firstDayOfMonth), formatDateForApi(lastDayOfMonth))
+      const statsData = response.data // { dailyLogs: [], emotionSummary: {} }
 
-      const newMarkedDates = {};
+      const newMarkedDates = {}
       if (statsData && statsData.dailyLogs) {
-        logger.debug("Daily logs received:", statsData.dailyLogs.length);
+        logger.debug('Daily logs received:', statsData.dailyLogs.length)
         statsData.dailyLogs.forEach(log => {
-          const visual = getEmotionVisual(log.emotion); // Sử dụng hàm helper
+          const visual = getEmotionVisual(log.emotion) // Sử dụng hàm helper
           newMarkedDates[log.logDate] = { // logDate từ backend đã là "YYYY-MM-DD"
             dots: [{ key: log.emotion, color: visual.color, selectedDotColor: visual.color }],
             // Hoặc dùng customStyles nếu muốn hiển thị emoji/icon trực tiếp trên lịch (phức tạp hơn)
@@ -79,55 +79,55 @@ const StatisticScreen = () => {
             //   container: { backgroundColor: visual.colorMuted || visual.color, borderRadius: 16 },
             //   text: { color: visual.textColor || COLORS.WHITE, fontWeight: 'bold', fontSize: 10 },
             // }
-          };
-        });
+          }
+        })
       }
-      setMarkedDates(newMarkedDates);
-      setEmotionSummary(statsData?.emotionSummary || {});
+      setMarkedDates(newMarkedDates)
+      setEmotionSummary(statsData?.emotionSummary || {})
 
     } catch (err) {
-      logger.error("StatisticScreen: Lỗi khi tải thống kê cảm xúc:", err.response?.data?.message || err.message);
-      setError('Không thể tải dữ liệu thống kê. Vui lòng thử lại.');
-      setMarkedDates({});
-      setEmotionSummary({});
+      logger.error('StatisticScreen: Lỗi khi tải thống kê cảm xúc:', err.response?.data?.message || err.message)
+      setError('Không thể tải dữ liệu thống kê. Vui lòng thử lại.')
+      setMarkedDates({})
+      setEmotionSummary({})
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  }, []); // Dependencies rỗng nếu userId lấy từ token ở backend
+  }, []) // Dependencies rỗng nếu userId lấy từ token ở backend
 
   useEffect(() => {
-    fetchStatsForMonth(currentMonthDate);
-  }, [currentMonthDate, fetchStatsForMonth]);
+    fetchStatsForMonth(currentMonthDate)
+  }, [currentMonthDate, fetchStatsForMonth])
 
   const onMonthChange = (month) => { // month: {dateString, day, month, year, timestamp}
-    logger.info("StatisticScreen: Month changed to:", month.dateString);
-    setCurrentMonthDate(new Date(month.timestamp));
-  };
+    logger.info('StatisticScreen: Month changed to:', month.dateString)
+    setCurrentMonthDate(new Date(month.timestamp))
+  }
   
   const chartData = useMemo(() => {
     if (!emotionSummary || Object.keys(emotionSummary).length === 0) {
-      return null;
+      return null
     }
-    const labels = [];
-    const dataValues = [];
-    const barColorsFunc = [];
+    const labels = []
+    const dataValues = []
+    const barColorsFunc = []
 
     // Sắp xếp cảm xúc theo EMOTIONS_LIST để có thứ tự nhất quán trong biểu đồ (nếu muốn)
     EMOTIONS_LIST.forEach(emotionDef => {
         if (emotionSummary[emotionDef.value] !== undefined) {
-            labels.push(emotionDef.name); // Tên tiếng Việt
-            dataValues.push(emotionSummary[emotionDef.value]);
+            labels.push(emotionDef.name) // Tên tiếng Việt
+            dataValues.push(emotionSummary[emotionDef.value])
             // react-native-chart-kit yêu cầu mảng các hàm trả về màu với opacity
-            barColorsFunc.push((opacity = 1) => emotionDef.color);
+            barColorsFunc.push((opacity = 1) => emotionDef.color)
         }
-    });
+    })
     
     // Nếu không có cảm xúc nào trong summary mà có trong EMOTIONS_LIST (ít xảy ra nếu dữ liệu tốt)
     // hoặc nếu bạn muốn hiển thị cả những cảm xúc không có trong tháng (với count = 0),
     // bạn có thể điều chỉnh logic ở trên.
     // Hiện tại, chỉ hiển thị các cảm xúc có trong summary.
 
-    if (labels.length === 0) return null; // Không có gì để vẽ
+    if (labels.length === 0) return null // Không có gì để vẽ
 
     return {
       labels: labels,
@@ -137,8 +137,8 @@ const StatisticScreen = () => {
           colors: barColorsFunc, // Mảng các hàm màu
         }
       ]
-    };
-  }, [emotionSummary]);
+    }
+  }, [emotionSummary])
 
 
   return (
@@ -212,15 +212,15 @@ const StatisticScreen = () => {
             <View style={styles.summaryContainer}>
               <Text style={styles.sectionTitle}>Tóm tắt tháng này:</Text>
               {EMOTIONS_LIST.map(emotionDef => { // Lặp qua EMOTIONS_LIST để giữ thứ tự
-                const count = emotionSummary[emotionDef.value];
+                const count = emotionSummary[emotionDef.value]
                 if (count !== undefined && count > 0) {
                   return (
                     <Text key={emotionDef.value} style={[styles.summaryText, { color: getEmotionVisual(emotionDef.value).color || COLORS.TEXT_SECONDARY }]}>
                       {getEmotionVisual(emotionDef.value).name}: {count} lần
                     </Text>
-                  );
+                  )
                 }
-                return null;
+                return null
               })}
             </View>
           )}
@@ -269,8 +269,8 @@ const StatisticScreen = () => {
         </View>
       </ScrollView>
     </SafeAreaView>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   safeArea: {
@@ -381,13 +381,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginTop: 30,
   }
-});
+})
 
 const logger = { // Logger đơn giản
   info: (...args) => console.log('StatisticScreen [INFO]', ...args),
   warn: (...args) => console.warn('StatisticScreen [WARN]', ...args),
   error: (...args) => console.error('StatisticScreen [ERROR]', ...args),
   debug: (...args) => console.log('StatisticScreen [DEBUG]', ...args),
-};
+}
 
-export default StatisticScreen;
+export default StatisticScreen

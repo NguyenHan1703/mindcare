@@ -40,6 +40,6 @@ const COLORS = {
   GRAY_DARK: '#333333',
   GRAY_MEDIUM: '#888888',
   GRAY_LIGHT: '#CCCCCC',
-};
+}
 
-export default COLORS;
+export default COLORS

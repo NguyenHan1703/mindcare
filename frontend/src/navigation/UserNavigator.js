@@ -1,19 +1,19 @@
-import React from 'react';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import React from 'react'
+import { createNativeStackNavigator } from '@react-navigation/native-stack'
 
 // Import các hằng số tên màn hình
-import * as ROUTES from '../constants/routes';
+import * as ROUTES from '../constants/routes'
 
 // Import các component màn hình của luồng User
-import HomeScreen from '../screens/user/HomeScreen';
-import ChatScreen from '../screens/user/ChatScreen';
-import ProfileScreen from '../screens/user/ProfileScreen';
-import ChangePasswordScreen from '../screens/user/ChangePasswordScreen';
-import ProfileDetailScreen from '../screens/user/ProfileDetailScreen';
-import StatisticScreen from '../screens/user/StatisticScreen';
-import COLORS from '../constants/colors'; // Để tùy chỉnh header nếu cần
+import HomeScreen from '../screens/user/HomeScreen'
+import ChatScreen from '../screens/user/ChatScreen'
+import ProfileScreen from '../screens/user/ProfileScreen'
+import ChangePasswordScreen from '../screens/user/ChangePasswordScreen'
+import ProfileDetailScreen from '../screens/user/ProfileDetailScreen'
+import StatisticScreen from '../screens/user/StatisticScreen'
+import COLORS from '../constants/colors' // Để tùy chỉnh header nếu cần
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator()
 
 const UserNavigator = () => {
   return (
@@ -77,7 +77,7 @@ const UserNavigator = () => {
         }}
       />
     </Stack.Navigator>
-  );
-};
+  )
+}
 
-export default UserNavigator;
+export default UserNavigator

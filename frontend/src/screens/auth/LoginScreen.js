@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'
 import {
   View,
   Text,
@@ -10,55 +10,55 @@ import {
   Platform,
   ScrollView,
   Alert, // Để hiển thị thông báo lỗi đơn giản
-} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { useAuth } from '../../contexts/AuthContext'; // Import useAuth
-import * as ROUTES from '../../constants/routes'; // Import tên các routes
-import COLORS from '../../constants/colors'; // Import màu sắc
+} from 'react-native'
+import { useNavigation } from '@react-navigation/native'
+import { useAuth } from '../../contexts/AuthContext' // Import useAuth
+import * as ROUTES from '../../constants/routes' // Import tên các routes
+import COLORS from '../../constants/colors' // Import màu sắc
 
 const LoginScreen = () => {
-  const navigation = useNavigation();
-  const { login, state: authState, clearError } = useAuth(); // Lấy hàm login và state từ AuthContext
+  const navigation = useNavigation()
+  const { login, state: authState, clearError } = useAuth() // Lấy hàm login và state từ AuthContext
 
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false); // State loading cục bộ cho nút bấm
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false) // State loading cục bộ cho nút bấm
 
   // Xóa lỗi khi màn hình được focus lại hoặc khi người dùng bắt đầu nhập liệu
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      clearError(); // Xóa lỗi từ AuthContext khi màn hình được focus
-    });
-    return unsubscribe;
-  }, [navigation, clearError]);
+      clearError() // Xóa lỗi từ AuthContext khi màn hình được focus
+    })
+    return unsubscribe
+  }, [navigation, clearError])
 
   const handleInputChange = (setter, value) => {
-    clearError(); // Xóa lỗi khi người dùng bắt đầu nhập
-    setter(value);
-  };
+    clearError() // Xóa lỗi khi người dùng bắt đầu nhập
+    setter(value)
+  }
 
   const handleLogin = async () => {
     if (!username.trim() || !password.trim()) {
-      Alert.alert('Lỗi', 'Vui lòng nhập đầy đủ tên tài khoản và mật khẩu.');
-      return;
+      Alert.alert('Lỗi', 'Vui lòng nhập đầy đủ tên tài khoản và mật khẩu.')
+      return
     }
 
-    setIsSubmitting(true);
-    clearError(); // Xóa lỗi cũ trước khi thử đăng nhập mới
+    setIsSubmitting(true)
+    clearError() // Xóa lỗi cũ trước khi thử đăng nhập mới
 
     try {
-      await login(username, password);
+      await login(username, password)
       // Nếu đăng nhập thành công, RootNavigator sẽ tự động chuyển màn hình
       // do userToken trong AuthContext thay đổi.
       // Không cần gọi navigation.navigate() ở đây cho trường hợp thành công.
     } catch (error) {
       // Lỗi đã được set trong authState.error bởi AuthContext
       // Alert.alert('Đăng nhập thất bại', authState.error || error.message); // authState.error có thể chưa kịp cập nhật ngay
-      Alert.alert('Đăng nhập thất bại', error.message || 'Đã có lỗi xảy ra.');
+      Alert.alert('Đăng nhập thất bại', error.message || 'Đã có lỗi xảy ra.')
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
   return (
     <KeyboardAvoidingView
@@ -109,8 +109,8 @@ const LoginScreen = () => {
           <TouchableOpacity
             style={styles.linkButton}
             onPress={() => {
-              clearError();
-              navigation.navigate(ROUTES.REGISTER_SCREEN);
+              clearError()
+              navigation.navigate(ROUTES.REGISTER_SCREEN)
             }}
           >
             <Text style={styles.linkText}>Chưa có tài khoản? Đăng ký</Text>
@@ -119,8 +119,8 @@ const LoginScreen = () => {
           <TouchableOpacity
             style={styles.linkButton}
             onPress={() => {
-              clearError();
-              navigation.navigate(ROUTES.FORGOT_PASSWORD_SCREEN);
+              clearError()
+              navigation.navigate(ROUTES.FORGOT_PASSWORD_SCREEN)
             }}
           >
             <Text style={styles.linkText}>Quên mật khẩu?</Text>
@@ -128,8 +128,8 @@ const LoginScreen = () => {
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   keyboardAvoidingView: {
@@ -194,6 +194,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     textAlign: 'center',
   },
-});
+})
 
-export default LoginScreen;
+export default LoginScreen

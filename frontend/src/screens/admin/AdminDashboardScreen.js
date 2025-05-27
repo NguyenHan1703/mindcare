@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react'
 import {
   View,
   Text,
@@ -10,82 +10,82 @@ import {
   Image,
   SafeAreaView,
   Modal,
-} from 'react-native';
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+} from 'react-native'
+import { useNavigation, useFocusEffect } from '@react-navigation/native'
+import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons'
 
-import { useAuth } from '../../contexts/AuthContext';
-import * as ROUTES from '../../constants/routes';
-import COLORS from '../../constants/colors';
-import { getAllUsersApi, deleteUserApi } from '../../api/admin.api.js';
-import AdminUserListItem from '../../components/admin/AdminUserListItem'; // ✨ IMPORT COMPONENT THẬT ✨
+import { useAuth } from '../../contexts/AuthContext'
+import * as ROUTES from '../../constants/routes'
+import COLORS from '../../constants/colors'
+import { getAllUsersApi, deleteUserApi } from '../../api/admin.api.js'
+import AdminUserListItem from '../../components/admin/AdminUserListItem' // ✨ IMPORT COMPONENT THẬT ✨
 
 // Logger đơn giản
 const logger = {
   info: (...args) => console.log('AdminDashboard [INFO]', ...args),
   warn: (...args) => console.warn('AdminDashboard [WARN]', ...args),
   error: (...args) => console.error('AdminDashboard [ERROR]', ...args),
-};
+}
 
 const AdminDashboardScreen = () => {
-  const navigation = useNavigation();
-  const { state: authState, logout } = useAuth();
-  const adminInfo = authState.userInfo;
+  const navigation = useNavigation()
+  const { state: authState, logout } = useAuth()
+  const adminInfo = authState.userInfo
 
-  const [users, setUsers] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [users, setUsers] = useState([])
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState(null)
 
-  const [isUserActionMenuVisible, setIsUserActionMenuVisible] = useState(false);
-  const [selectedUserForMenu, setSelectedUserForMenu] = useState(null);
+  const [isUserActionMenuVisible, setIsUserActionMenuVisible] = useState(false)
+  const [selectedUserForMenu, setSelectedUserForMenu] = useState(null)
 
-  const [isAdminProfileMenuVisible, setIsAdminProfileMenuVisible] = useState(false);
+  const [isAdminProfileMenuVisible, setIsAdminProfileMenuVisible] = useState(false)
 
   const fetchUsers = async () => {
-    setIsLoading(true);
-    setError(null);
+    setIsLoading(true)
+    setError(null)
     try {
-      const response = await getAllUsersApi();
-      setUsers(response.data || []);
+      const response = await getAllUsersApi()
+      setUsers(response.data || [])
     } catch (err) {
-      logger.error("AdminDashboard: Lỗi khi tải danh sách người dùng:", err.response?.data?.message || err.message);
-      setError('Không thể tải danh sách người dùng.');
-      setUsers([]);
+      logger.error('AdminDashboard: Lỗi khi tải danh sách người dùng:', err.response?.data?.message || err.message)
+      setError('Không thể tải danh sách người dùng.')
+      setUsers([])
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   useFocusEffect(
     useCallback(() => {
-      logger.info("AdminDashboard focused, fetching users...");
-      fetchUsers();
-      return () => logger.info("AdminDashboard unfocused");
+      logger.info('AdminDashboard focused, fetching users...')
+      fetchUsers()
+      return () => logger.info('AdminDashboard unfocused')
     }, [])
-  );
+  )
 
   const handleAddUser = () => {
-    navigation.navigate(ROUTES.ADMIN_ADD_USER_SCREEN);
-  };
+    navigation.navigate(ROUTES.ADMIN_ADD_USER_SCREEN)
+  }
 
   const handleOpenUserOptionsMenu = (user) => {
-    setSelectedUserForMenu(user);
-    setIsUserActionMenuVisible(true);
-  };
+    setSelectedUserForMenu(user)
+    setIsUserActionMenuVisible(true)
+  }
 
   const closeUserOptionsMenu = () => {
-    setIsUserActionMenuVisible(false);
-    setSelectedUserForMenu(null);
-  };
+    setIsUserActionMenuVisible(false)
+    setSelectedUserForMenu(null)
+  }
 
   const handleEditUser = () => {
-    if (!selectedUserForMenu) return;
-    navigation.navigate(ROUTES.ADMIN_EDIT_USER_SCREEN, { userId: selectedUserForMenu.id, username: selectedUserForMenu.username });
-    closeUserOptionsMenu();
-  };
+    if (!selectedUserForMenu) return
+    navigation.navigate(ROUTES.ADMIN_EDIT_USER_SCREEN, { userId: selectedUserForMenu.id, username: selectedUserForMenu.username })
+    closeUserOptionsMenu()
+  }
 
   const handleDeleteUser = () => {
-    if (!selectedUserForMenu) return;
+    if (!selectedUserForMenu) return
     Alert.alert(
       'Xác nhận xóa',
       `Bạn có chắc chắn muốn xóa người dùng "${selectedUserForMenu.username}"? Tất cả dữ liệu liên quan (hội thoại, cảm xúc) cũng sẽ bị xóa.`,
@@ -96,38 +96,38 @@ const AdminDashboardScreen = () => {
           style: 'destructive',
           onPress: async () => {
             try {
-              await deleteUserApi(selectedUserForMenu.id);
-              logger.info("AdminDashboard: Đã xóa người dùng:", selectedUserForMenu.id);
-              fetchUsers(); // Tải lại danh sách
+              await deleteUserApi(selectedUserForMenu.id)
+              logger.info('AdminDashboard: Đã xóa người dùng:', selectedUserForMenu.id)
+              fetchUsers() // Tải lại danh sách
             } catch (err) {
-              logger.error("AdminDashboard: Lỗi khi xóa người dùng:", selectedUserForMenu.id, err.response?.data?.message || err.message);
-              Alert.alert('Lỗi', `Không thể xóa người dùng này: ${err.response?.data?.message || err.message}`);
+              logger.error('AdminDashboard: Lỗi khi xóa người dùng:', selectedUserForMenu.id, err.response?.data?.message || err.message)
+              Alert.alert('Lỗi', `Không thể xóa người dùng này: ${err.response?.data?.message || err.message}`)
             } finally {
-              closeUserOptionsMenu();
+              closeUserOptionsMenu()
             }
           },
         },
       ]
-    );
-  };
+    )
+  }
 
   const handleViewUserConversations = () => {
-    if (!selectedUserForMenu) return;
+    if (!selectedUserForMenu) return
     navigation.navigate(ROUTES.ADMIN_USER_CONVERSATION_LIST_SCREEN, {
       targetUserId: selectedUserForMenu.id,
       targetUsername: selectedUserForMenu.username,
-    });
-    closeUserOptionsMenu();
-  };
+    })
+    closeUserOptionsMenu()
+  }
 
   const handleViewUserEmotionStats = () => {
-    if (!selectedUserForMenu) return;
+    if (!selectedUserForMenu) return
     navigation.navigate(ROUTES.ADMIN_USER_EMOTION_STATS_SCREEN, {
       targetUserId: selectedUserForMenu.id,
       targetUsername: selectedUserForMenu.username,
-    });
-    closeUserOptionsMenu();
-  };
+    })
+    closeUserOptionsMenu()
+  }
 
   const renderUserActionMenu = () => (
     <Modal
@@ -161,7 +161,7 @@ const AdminDashboardScreen = () => {
         </View>
       </TouchableOpacity>
     </Modal>
-  );
+  )
   
   const renderAdminProfileMenu = () => (
     <Modal
@@ -174,16 +174,16 @@ const AdminDashboardScreen = () => {
         <View style={styles.menuModalContainer}>
           <Text style={styles.menuTitle}>{adminInfo?.username}</Text>
           <TouchableOpacity style={styles.menuModalItem} onPress={() => {
-            setIsAdminProfileMenuVisible(false);
+            setIsAdminProfileMenuVisible(false)
             // Admin có thể xem/sửa profile của chính mình như một user bình thường
-            navigation.navigate(ROUTES.PROFILE_SCREEN); 
+            navigation.navigate(ROUTES.PROFILE_SCREEN) 
           }}>
             <Ionicons name="person-circle-outline" size={22} color={COLORS.PRIMARY} />
             <Text style={styles.menuModalText}>Thông tin của tôi</Text>
           </TouchableOpacity>
           <TouchableOpacity style={[styles.menuModalItem, styles.deleteMenuItem]} onPress={() => {
-            setIsAdminProfileMenuVisible(false);
-            logout();
+            setIsAdminProfileMenuVisible(false)
+            logout()
           }}>
             <MaterialCommunityIcons name="logout" size={22} color={COLORS.ERROR} />
             <Text style={[styles.menuModalText, { color: COLORS.ERROR }]}>Đăng xuất</Text>
@@ -194,7 +194,7 @@ const AdminDashboardScreen = () => {
         </View>
       </TouchableOpacity>
     </Modal>
-  );
+  )
 
   const renderHeader = () => (
     <View style={styles.headerContainer}>
@@ -212,14 +212,14 @@ const AdminDashboardScreen = () => {
         </TouchableOpacity>
       </View>
     </View>
-  );
+  )
 
   const renderUserItem = ({ item }) => (
     <AdminUserListItem // ✨ SỬ DỤNG COMPONENT THẬT ✨
       user={item}
       onOpenOptions={handleOpenUserOptionsMenu}
     />
-  );
+  )
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -254,8 +254,8 @@ const AdminDashboardScreen = () => {
         />
       )}
     </SafeAreaView>
-  );
-};
+  )
+}
 
 // Styles giữ nguyên như PD #25, chỉ thêm style cho inlineAddButton nếu cần
 const styles = StyleSheet.create({
@@ -387,6 +387,6 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     fontWeight: 'bold',
   }
-});
+})
 
-export default AdminDashboardScreen;
+export default AdminDashboardScreen

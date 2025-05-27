@@ -1,20 +1,20 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons'; // Sử dụng icon từ Expo
-import COLORS from '../../constants/colors'; // Import màu sắc
+import React from 'react'
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
+import { Ionicons } from '@expo/vector-icons' // Sử dụng icon từ Expo
+import COLORS from '../../constants/colors' // Import màu sắc
 
 const ConversationItem = ({ id, title, updatedAt, onPress, onDelete }) => {
   const handleItemPress = () => {
     if (onPress) {
-      onPress(id, title); // Gọi hàm onPress với id và title
+      onPress(id, title) // Gọi hàm onPress với id và title
     }
-  };
+  }
 
   const handleDeletePress = () => {
     if (onDelete) {
-      onDelete(id, title); // Gọi hàm onDelete với id và title
+      onDelete(id, title) // Gọi hàm onDelete với id và title
     }
-  };
+  }
 
   return (
     <TouchableOpacity style={styles.container} onPress={handleItemPress} activeOpacity={0.7}>
@@ -30,8 +30,8 @@ const ConversationItem = ({ id, title, updatedAt, onPress, onDelete }) => {
         <Ionicons name="trash-outline" size={24} color={COLORS.ERROR} />
       </TouchableOpacity>
     </TouchableOpacity>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -71,6 +71,6 @@ const styles = StyleSheet.create({
     padding: 8, // Tăng vùng chạm cho nút xóa
     marginLeft: 10,
   },
-});
+})
 
-export default ConversationItem;
+export default ConversationItem

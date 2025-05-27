@@ -1,21 +1,21 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import COLORS from '../../constants/colors';
+import React from 'react'
+import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native'
+import { Ionicons } from '@expo/vector-icons'
+import COLORS from '../../constants/colors'
 
 const AdminUserListItem = ({ user, onOpenOptions }) => {
   if (!user) {
-    return null; // Không render gì nếu không có user data
+    return null // Không render gì nếu không có user data
   }
 
   const handleOptionsPress = () => {
     if (onOpenOptions) {
-      onOpenOptions(user);
+      onOpenOptions(user)
     }
-  };
+  }
 
   // Format roles để hiển thị (loại bỏ tiền tố "ROLE_")
-  const formattedRoles = user.roles ? Array.from(user.roles).map(role => role.replace(/^ROLE_/, '')).join(', ') : 'N/A';
+  const formattedRoles = user.roles ? Array.from(user.roles).map(role => role.replace(/^ROLE_/, '')).join(', ') : 'N/A'
 
   return (
     <View style={styles.container}>
@@ -40,8 +40,8 @@ const AdminUserListItem = ({ user, onOpenOptions }) => {
         <Ionicons name="ellipsis-vertical" size={24} color={COLORS.TEXT_SECONDARY} />
       </TouchableOpacity>
     </View>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -98,6 +98,6 @@ const styles = StyleSheet.create({
     paddingLeft: 10, // Tăng vùng chạm cho nút options
     paddingVertical: 8,
   },
-});
+})
 
-export default AdminUserListItem;
+export default AdminUserListItem

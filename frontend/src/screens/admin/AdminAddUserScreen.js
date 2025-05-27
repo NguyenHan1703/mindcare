@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'
 import {
   View,
   Text,
@@ -11,91 +11,91 @@ import {
   ScrollView,
   Alert,
   SafeAreaView,
-} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons'; // For role selection icons
+} from 'react-native'
+import { useNavigation } from '@react-navigation/native'
+import { Ionicons } from '@expo/vector-icons' // For role selection icons
 
-import COLORS from '../../constants/colors';
-import { addUserByAdminApi } from '../../api/admin.api.js';
-import * as ROUTES from '../../constants/routes';
+import COLORS from '../../constants/colors'
+import { addUserByAdminApi } from '../../api/admin.api.js'
+import * as ROUTES from '../../constants/routes'
 
 // Các vai trò có sẵn mà admin có thể gán
 const AVAILABLE_ROLES = [
   { label: 'Người dùng (USER)', value: 'ROLE_USER' },
   { label: 'Quản trị viên (ADMIN)', value: 'ROLE_ADMIN' },
-];
+]
 
 const AdminAddUserScreen = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation()
 
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [avatarUrl, setAvatarUrl] = useState(''); // Tùy chọn
-  const [selectedRoles, setSelectedRoles] = useState(new Set([AVAILABLE_ROLES[0].value])); // Mặc định chọn ROLE_USER
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [avatarUrl, setAvatarUrl] = useState('') // Tùy chọn
+  const [selectedRoles, setSelectedRoles] = useState(new Set([AVAILABLE_ROLES[0].value])) // Mặc định chọn ROLE_USER
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState(null);
-  const [successMessage, setSuccessMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState(null)
+  const [successMessage, setSuccessMessage] = useState('')
 
   useEffect(() => {
     // Xóa lỗi khi màn hình focus (ví dụ khi quay lại từ màn hình khác)
     const unsubscribe = navigation.addListener('focus', () => {
-      setError(null);
-      setSuccessMessage('');
-    });
-    return unsubscribe;
-  }, [navigation]);
+      setError(null)
+      setSuccessMessage('')
+    })
+    return unsubscribe
+  }, [navigation])
   
   const handleInputChange = (setter, value) => {
-    setError(null); // Xóa lỗi cũ khi người dùng bắt đầu nhập
-    setSuccessMessage('');
-    setter(value);
-  };
+    setError(null) // Xóa lỗi cũ khi người dùng bắt đầu nhập
+    setSuccessMessage('')
+    setter(value)
+  }
 
   const toggleRole = (roleValue) => {
     setSelectedRoles((prevRoles) => {
-      const newRoles = new Set(prevRoles);
+      const newRoles = new Set(prevRoles)
       if (newRoles.has(roleValue)) {
         // Không cho phép bỏ chọn vai trò cuối cùng nếu đó là ROLE_USER
         // Hoặc đảm bảo luôn có ít nhất một vai trò
         if (roleValue === 'ROLE_USER' && newRoles.size === 1) {
-            Alert.alert("Thông báo", "Người dùng phải có ít nhất vai trò USER.");
-            return prevRoles;
+            Alert.alert('Thông báo', 'Người dùng phải có ít nhất vai trò USER.')
+            return prevRoles
         }
-        newRoles.delete(roleValue);
+        newRoles.delete(roleValue)
       } else {
-        newRoles.add(roleValue);
+        newRoles.add(roleValue)
       }
       // Đảm bảo nếu không có role nào được chọn, thì tự động chọn ROLE_USER
       // Hoặc bạn có thể yêu cầu phải chọn ít nhất một role khi validate
       if (newRoles.size === 0) {
-          newRoles.add('ROLE_USER'); 
-          Alert.alert("Thông báo", "Đã tự động chọn vai trò USER vì người dùng phải có ít nhất một vai trò.");
+          newRoles.add('ROLE_USER') 
+          Alert.alert('Thông báo', 'Đã tự động chọn vai trò USER vì người dùng phải có ít nhất một vai trò.')
       }
-      return newRoles;
-    });
-  };
+      return newRoles
+    })
+  }
 
   const validateInputs = () => {
     if (!username.trim() || !password.trim()) {
-      setError('Tên người dùng và mật khẩu không được để trống.');
-      return false;
+      setError('Tên người dùng và mật khẩu không được để trống.')
+      return false
     }
     if (password.length < 6) {
-      setError('Mật khẩu phải có ít nhất 6 ký tự.');
-      return false;
+      setError('Mật khẩu phải có ít nhất 6 ký tự.')
+      return false
     }
     if (selectedRoles.size === 0) {
-      setError('Vui lòng chọn ít nhất một vai trò cho người dùng.');
-      return false;
+      setError('Vui lòng chọn ít nhất một vai trò cho người dùng.')
+      return false
     }
-    setError(null);
-    return true;
-  };
+    setError(null)
+    return true
+  }
 
   const handleSaveUser = () => {
     if (!validateInputs()) {
-      return;
+      return
     }
 
     Alert.alert(
@@ -106,42 +106,42 @@ const AdminAddUserScreen = () => {
         {
           text: 'Tạo',
           onPress: async () => {
-            setIsSubmitting(true);
-            setSuccessMessage('');
-            setError(null);
+            setIsSubmitting(true)
+            setSuccessMessage('')
+            setError(null)
 
             const userData = {
               username: username.trim(),
               password: password,
               avatarUrl: avatarUrl.trim() || null, // Gửi null nếu rỗng
               roles: Array.from(selectedRoles), // Chuyển Set thành Array<String>
-            };
+            }
 
             try {
-              await addUserByAdminApi(userData);
-              setSuccessMessage(`Người dùng "${username}" đã được tạo thành công!`);
+              await addUserByAdminApi(userData)
+              setSuccessMessage(`Người dùng "${username}" đã được tạo thành công!`)
               Alert.alert(
                 'Thành công',
                 `Người dùng "${username}" đã được tạo.`,
                 [{ text: 'OK', onPress: () => navigation.goBack() }] // Quay lại AdminDashboardScreen
-              );
+              )
               // Xóa form
-              setUsername('');
-              setPassword('');
-              setAvatarUrl('');
-              setSelectedRoles(new Set([AVAILABLE_ROLES[0].value]));
+              setUsername('')
+              setPassword('')
+              setAvatarUrl('')
+              setSelectedRoles(new Set([AVAILABLE_ROLES[0].value]))
             } catch (err) {
-              const errorMessage = err.response?.data?.message || err.message || 'Tạo người dùng thất bại.';
-              setError(errorMessage);
-              Alert.alert('Thất bại', errorMessage);
+              const errorMessage = err.response?.data?.message || err.message || 'Tạo người dùng thất bại.'
+              setError(errorMessage)
+              Alert.alert('Thất bại', errorMessage)
             } finally {
-              setIsSubmitting(false);
+              setIsSubmitting(false)
             }
           },
         },
       ]
-    );
-  };
+    )
+  }
   
   // Tiêu đề "Thêm người dùng mới" và nút "< Quay lại" được AdminNavigator quản lý
 
@@ -206,7 +206,7 @@ const AdminAddUserScreen = () => {
                   activeOpacity={0.7}
                 >
                   <Ionicons
-                    name={selectedRoles.has(role.value) ? "checkbox" : "square-outline"}
+                    name={selectedRoles.has(role.value) ? 'checkbox' : 'square-outline'}
                     size={24}
                     color={selectedRoles.has(role.value) ? COLORS.PRIMARY : COLORS.TEXT_SECONDARY}
                     style={styles.roleIcon}
@@ -238,8 +238,8 @@ const AdminAddUserScreen = () => {
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   safeArea: {
@@ -342,6 +342,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 15,
   },
-});
+})
 
-export default AdminAddUserScreen;
+export default AdminAddUserScreen
