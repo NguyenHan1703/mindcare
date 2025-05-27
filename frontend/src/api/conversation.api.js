@@ -1,4 +1,4 @@
-import apiClient from './apiClient';
+import apiClient from './apiClient.js';
 
 /**
  * Gọi API để tạo một cuộc hội thoại mới.

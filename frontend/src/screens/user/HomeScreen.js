@@ -1,4 +1,3 @@
-// src/screens/user/HomeScreen.js
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
@@ -12,36 +11,29 @@ import {
   SafeAreaView,
 } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons'; // Sử dụng icon từ Expo
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
 import { useAuth } from '../../contexts/AuthContext';
 import * as ROUTES from '../../constants/routes';
 import COLORS from '../../constants/colors';
-// Giả định các hàm API này sẽ được tạo trong src/api/conversation.api.js (PD #17.1)
-import { getUserConversations, createConversation, deleteConversationApi } from '../../api/conversation.api.js';
+// ✨ SỬA TÊN HÀM API KHI IMPORT ✨
+import {
+  getUserConversationsApi,
+  createConversationApi,
+  deleteConversationApi
+} from '../../api/conversation.api.js';
+import ConversationItem from '../../components/user/ConversationItem';
 
-// --- Placeholder cho ConversationItem ---
-// Component này sẽ được tạo chi tiết hơn ở PD #17.2
-// Tạm thời để HomeScreen có thể chạy
-const ConversationItemPlaceholder = ({ item, onPress, onDelete }) => (
-  <TouchableOpacity style={styles.conversationItem} onPress={() => onPress(item.id, item.title)}>
-    <View style={styles.conversationTextContainer}>
-      <Text style={styles.conversationTitle}>{item.title || 'Cuộc hội thoại không tên'}</Text>
-      <Text style={styles.conversationTime}>
-        Cập nhật: {item.updatedAt ? new Date(item.updatedAt).toLocaleString('vi-VN') : 'N/A'}
-      </Text>
-    </View>
-    <TouchableOpacity onPress={() => onDelete(item.id, item.title)} style={styles.deleteButton}>
-      <Ionicons name="trash-outline" size={24} color={COLORS.ERROR} />
-    </TouchableOpacity>
-  </TouchableOpacity>
-);
-// --- Hết Placeholder ---
-
+// Logger đơn giản
+const logger = {
+  info: (...args) => console.log('HomeScreen [INFO]', ...args),
+  warn: (...args) => console.warn('HomeScreen [WARN]', ...args),
+  error: (...args) => console.error('HomeScreen [ERROR]', ...args),
+};
 
 const HomeScreen = () => {
   const navigation = useNavigation();
-  const { state: authState, logout } = useAuth(); // Lấy userInfo từ authState
+  const { state: authState } = useAuth(); // Không cần logout trực tiếp ở đây
   const { userInfo } = authState;
 
   const [conversations, setConversations] = useState([]);
@@ -49,41 +41,42 @@ const HomeScreen = () => {
   const [isCreatingConvo, setIsCreatingConvo] = useState(false);
   const [error, setError] = useState(null);
 
-  const fetchConversations = async () => {
-    setIsLoading(true);
+  const fetchConversations = useCallback(async (showLoadingIndicator = true) => {
+    if (showLoadingIndicator && conversations.length === 0) setIsLoading(true);
+    else if (!showLoadingIndicator) setIsLoading(true); // Vẫn hiện loading cho pull-to-refresh
+
     setError(null);
     try {
-      const response = await getUserConversations(); // Gọi API
-      setConversations(response.data || []); // response.data là mảng ConversationDto
+      const response = await getUserConversationsApi();
+      setConversations(response.data || []);
     } catch (err) {
-      logger.error("HomeScreen: Lỗi khi tải danh sách hội thoại:", err.response?.data || err.message);
+      logger.error("Lỗi khi tải danh sách hội thoại:", err.response?.data?.message || err.message);
       setError('Không thể tải danh sách hội thoại. Vui lòng thử lại.');
-      setConversations([]); // Đặt lại danh sách nếu có lỗi
+      setConversations([]);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [conversations.length]); // conversations.length để re-run fetch khi list rỗng và cần loading
 
-  // Sử dụng useFocusEffect để tải lại dữ liệu mỗi khi màn hình được focus
   useFocusEffect(
     useCallback(() => {
       logger.info("HomeScreen focused, fetching conversations...");
-      fetchConversations();
-      // Hàm cleanup (tùy chọn)
+      fetchConversations(true); // Hiển thị loading indicator toàn màn hình nếu list rỗng
       return () => logger.info("HomeScreen unfocused");
-    }, [])
+    }, [fetchConversations]) // Thêm fetchConversations vào dependencies
   );
 
   const handleCreateConversation = async () => {
     setIsCreatingConvo(true);
     setError(null);
     try {
-      // Tiêu đề có thể để trống để service tự tạo, hoặc lấy từ một prompt
-      const response = await createConversation(null); // Gọi API, title để null hoặc một giá trị mặc định
-      const newConversation = response.data; // response.data là ConversationDto
+      // titleOpt có thể được truyền vào đây nếu bạn có UI cho phép user nhập title trước khi tạo
+      const response = await createConversationApi(null); // title là null để backend tự tạo
+      const newConversation = response.data;
       if (newConversation && newConversation.id) {
-        logger.info("HomeScreen: Cuộc hội thoại mới được tạo:", newConversation.id);
-        // Điều hướng đến ChatScreen với conversationId mới và title
+        logger.info("Cuộc hội thoại mới được tạo:", newConversation.id);
+        // Tải lại danh sách để hiển thị conversation mới nhất ở đầu (do sắp xếp theo updatedAt)
+        await fetchConversations(false); // false để không hiện loading indicator toàn màn hình
         navigation.navigate(ROUTES.CHAT_SCREEN, {
           conversationId: newConversation.id,
           conversationTitle: newConversation.title,
@@ -92,7 +85,7 @@ const HomeScreen = () => {
         throw new Error("Phản hồi tạo hội thoại không hợp lệ.");
       }
     } catch (err) {
-      logger.error("HomeScreen: Lỗi khi tạo hội thoại mới:", err.response?.data || err.message);
+      logger.error("Lỗi khi tạo hội thoại mới:", err.response?.data?.message || err.message);
       Alert.alert('Lỗi', 'Không thể tạo cuộc hội thoại mới. Vui lòng thử lại.');
     } finally {
       setIsCreatingConvo(false);
@@ -110,12 +103,11 @@ const HomeScreen = () => {
           style: 'destructive',
           onPress: async () => {
             try {
-              await deleteConversationApi(conversationId); // Gọi API
-              logger.info("HomeScreen: Đã xóa hội thoại:", conversationId);
-              // Tải lại danh sách hội thoại sau khi xóa
-              fetchConversations();
+              await deleteConversationApi(conversationId); 
+              logger.info("Đã xóa hội thoại:", conversationId);
+              fetchConversations(false); // Tải lại danh sách, không hiện loading indicator toàn màn hình
             } catch (err) {
-              logger.error("HomeScreen: Lỗi khi xóa hội thoại:", conversationId, err.response?.data || err.message);
+              logger.error("Lỗi khi xóa hội thoại:", conversationId, err.response?.data?.message || err.message);
               Alert.alert('Lỗi', 'Không thể xóa cuộc hội thoại. Vui lòng thử lại.');
             }
           },
@@ -133,13 +125,16 @@ const HomeScreen = () => {
 
   const renderHeader = () => (
     <View style={styles.headerContainer}>
-      <TouchableOpacity onPress={fetchConversations}> {/* Nhấn MindCare để reload */}
-        {/* <Image source={require('../assets/images/logo.png')} style={styles.logo} /> Thay bằng logo của bạn */}
+      <TouchableOpacity onPress={() => fetchConversations(false)}>
         <Text style={styles.headerTitle}>MindCare</Text>
       </TouchableOpacity>
       <View style={styles.headerActions}>
         <TouchableOpacity onPress={handleCreateConversation} style={styles.addButton} disabled={isCreatingConvo}>
-          {isCreatingConvo ? <ActivityIndicator color={COLORS.PRIMARY} size="small" /> : <Ionicons name="add-circle-outline" size={30} color={COLORS.PRIMARY} />}
+          {isCreatingConvo ? (
+            <ActivityIndicator color={COLORS.PRIMARY} size="small" />
+          ) : (
+            <Ionicons name="add-circle-outline" size={30} color={COLORS.PRIMARY} />
+          )}
           <Text style={styles.addButtonText}>Tạo mới</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate(ROUTES.PROFILE_SCREEN)} style={styles.profileButton}>
@@ -153,7 +148,17 @@ const HomeScreen = () => {
     </View>
   );
 
-  if (isLoading && conversations.length === 0) { // Chỉ hiển thị loading toàn màn hình khi chưa có data
+  const renderConversationItem = ({ item }) => (
+    <ConversationItem
+      id={item.id}
+      title={item.title}
+      updatedAt={item.updatedAt ? new Date(item.updatedAt).toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' }) : 'N/A'}
+      onPress={handleNavigateToChat}
+      onDelete={handleDeleteConversation}
+    />
+  );
+
+  if (isLoading && conversations.length === 0) {
     return (
       <SafeAreaView style={styles.safeArea}>
         {renderHeader()}
@@ -169,8 +174,9 @@ const HomeScreen = () => {
       {renderHeader()}
       {error && (
         <View style={styles.centeredMessageContainer}>
+          <MaterialIcons name="error-outline" size={60} color={COLORS.ERROR} />
           <Text style={styles.errorText}>{error}</Text>
-          <TouchableOpacity onPress={fetchConversations} style={styles.retryButton}>
+          <TouchableOpacity onPress={() => fetchConversations(true)} style={styles.retryButton}>
             <Text style={styles.retryButtonText}>Thử lại</Text>
           </TouchableOpacity>
         </View>
@@ -179,22 +185,16 @@ const HomeScreen = () => {
         <View style={styles.centeredMessageContainer}>
           <MaterialIcons name="chat-bubble-outline" size={60} color={COLORS.TEXT_SECONDARY} />
           <Text style={styles.emptyMessage}>Hiện chưa có cuộc hội thoại nào.</Text>
-          <Text style={styles.emptySubMessage}>Nhấn "+" để bắt đầu trò chuyện.</Text>
+          <Text style={styles.emptySubMessage}>Nhấn "+" ở góc trên để bắt đầu trò chuyện.</Text>
         </View>
       )}
       {conversations.length > 0 && (
         <FlatList
           data={conversations}
-          renderItem={({ item }) => (
-            <ConversationItemPlaceholder // Sẽ thay bằng ConversationItem.js thật ở PD #17.2
-              item={item}
-              onPress={handleNavigateToChat}
-              onDelete={handleDeleteConversation}
-            />
-          )}
+          renderItem={renderConversationItem}
           keyExtractor={(item) => item.id.toString()}
           contentContainerStyle={styles.listContainer}
-          onRefresh={fetchConversations} // Kéo để refresh
+          onRefresh={() => fetchConversations(false)} // Kéo để refresh
           refreshing={isLoading} // Hiển thị loading indicator khi refresh
         />
       )}
@@ -215,17 +215,12 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.BORDER,
-    backgroundColor: COLORS.BACKGROUND_SECONDARY, // Hoặc màu header riêng
+    backgroundColor: COLORS.BACKGROUND_SECONDARY,
   },
   headerTitle: {
     fontSize: 22,
     fontWeight: 'bold',
     color: COLORS.TEXT_PRIMARY,
-  },
-  logo: { // Nếu bạn dùng logo ảnh
-    width: 100,
-    height: 30,
-    resizeMode: 'contain',
   },
   headerActions: {
     flexDirection: 'row',
@@ -252,6 +247,7 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     paddingVertical: 10,
+    paddingBottom: 20, // Thêm padding dưới cho dễ cuộn
   },
   centeredMessageContainer: {
     flex: 1,
@@ -288,44 +284,6 @@ const styles = StyleSheet.create({
     color: COLORS.WHITE,
     fontSize: 16,
   },
-  // Styles cho ConversationItemPlaceholder (tạm thời)
-  conversationItem: {
-    backgroundColor: COLORS.BACKGROUND_SECONDARY,
-    padding: 15,
-    marginVertical: 5,
-    marginHorizontal: 15,
-    borderRadius: 8,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: COLORS.BORDER,
-  },
-  conversationTextContainer: {
-    flex: 1,
-  },
-  conversationTitle: {
-    fontSize: 17,
-    fontWeight: 'bold',
-    color: COLORS.TEXT_PRIMARY,
-  },
-  conversationTime: {
-    fontSize: 12,
-    color: COLORS.TEXT_SECONDARY,
-    marginTop: 4,
-  },
-  deleteButton: {
-    padding: 8,
-  }
 });
-
-// Thêm Logger (nếu chưa có ở đầu file hoặc dùng chung)
-const logger = {
-  info: (...args) => console.log('[INFO]', ...args),
-  warn: (...args) => console.warn('[WARN]', ...args),
-  error: (...args) => console.error('[ERROR]', ...args),
-  debug: (...args) => console.log('[DEBUG]', ...args),
-};
-
 
 export default HomeScreen;
