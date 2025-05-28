@@ -1,26 +1,21 @@
 import React from 'react'
-import { View, Text, StyleSheet } from 'react-native' // Import View và Text cho placeholder
+import { View, Text, StyleSheet } from 'react-native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
+
+// Import các màn hình thực tế
+import AdminDashboardScreen from '../screens/admin/AdminDashboardScreen'
+import AdminAddUserScreen from '../screens/admin/AdminAddUserScreen'
+import AdminEditUserScreen from '../screens/admin/AdminEditUserScreen'
+import AdminUserChatViewScreen from '../screens/admin/AdminUserChatViewScreen'
+import AdminUserConversationListScreen from '../screens/admin/AdminUserConversationListScreen'
+import AdminUserEmotionStatsScreen from '../screens/admin/AdminUserEmotionStatsScreen'
 
 // Import các hằng số tên màn hình
 import * as ROUTES from '../constants/routes'
-import COLORS from '../constants/colors' // Để tùy chỉnh header nếu cần
+import COLORS from '../constants/colors'
 
 const Stack = createNativeStackNavigator()
 
-// --- Các Component Màn hình Giữ chỗ (Placeholders) ---
-// Các component này sẽ được thay thế bằng các file màn hình thực tế ở các PD sau.
-
-const PlaceholderScreen = ({ route }) => (
-  <View style={styles.placeholderContainer}>
-    <Text style={styles.placeholderText}>{route.name}</Text>
-    <Text style={styles.placeholderSubText}>(Nội dung màn hình sẽ được xây dựng sau)</Text>
-  </View>
-)
-
-// Bạn có thể tạo các placeholder cụ thể hơn nếu muốn, ví dụ:
-// const AdminDashboardScreen = () => <PlaceholderScreen route={{ name: "Admin Dashboard" }} />;
-// Hoặc đơn giản là dùng chung PlaceholderScreen cho tất cả như dưới đây.
 
 const AdminNavigator = () => {
   return (
@@ -39,39 +34,32 @@ const AdminNavigator = () => {
     >
       <Stack.Screen
         name={ROUTES.ADMIN_DASHBOARD_SCREEN}
-        component={PlaceholderScreen} // Sẽ thay bằng AdminDashboardScreen.js
+        component={AdminDashboardScreen}
         options={{ title: 'Bảng điều khiển Admin' }}
       />
-      {/* User List Screen - có thể là một phần của Dashboard hoặc màn hình riêng */}
-      {/* Nếu là màn hình riêng, bạn có thể thêm vào đây */}
-      {/* <Stack.Screen
-        name={ROUTES.ADMIN_USER_LIST_SCREEN} // Bạn cần định nghĩa hằng số này trong routes.js
-        component={PlaceholderScreen} // Sẽ thay bằng AdminUserListScreen.js
-        options={{ title: 'Danh sách người dùng' }}
-      /> */}
       <Stack.Screen
         name={ROUTES.ADMIN_ADD_USER_SCREEN}
-        component={PlaceholderScreen} // Sẽ thay bằng AdminAddUserScreen.js
+        component={AdminAddUserScreen}
         options={{ title: 'Thêm người dùng mới' }}
       />
       <Stack.Screen
         name={ROUTES.ADMIN_EDIT_USER_SCREEN}
-        component={PlaceholderScreen} // Sẽ thay bằng AdminEditUserScreen.js
+        component={AdminEditUserScreen}
         options={{ title: 'Sửa thông tin người dùng' }}
       />
       <Stack.Screen
         name={ROUTES.ADMIN_USER_EMOTION_STATS_SCREEN}
-        component={PlaceholderScreen} // Sẽ thay bằng AdminUserEmotionStatsScreen.js
+        component={AdminUserEmotionStatsScreen}
         options={{ title: 'Thống kê cảm xúc User' }}
       />
       <Stack.Screen
         name={ROUTES.ADMIN_USER_CONVERSATION_LIST_SCREEN}
-        component={PlaceholderScreen} // Sẽ thay bằng AdminUserConversationListScreen.js
+        component={AdminUserConversationListScreen}
         options={{ title: 'DS Hội thoại User' }}
       />
       <Stack.Screen
         name={ROUTES.ADMIN_USER_CHAT_VIEW_SCREEN}
-        component={PlaceholderScreen} // Sẽ thay bằng AdminUserChatViewScreen.js
+        component={AdminUserChatViewScreen}
         options={{ title: 'Xem hội thoại User' }}
       />
     </Stack.Navigator>

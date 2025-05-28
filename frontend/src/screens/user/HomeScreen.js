@@ -9,9 +9,11 @@ import {
   Alert,
   Image,
   SafeAreaView,
+  Platform,
+  StatusBar,
 } from 'react-native'
 import { useNavigation, useFocusEffect } from '@react-navigation/native'
-import { Ionicons, MaterialIcons } from '@expo/vector-icons'
+import { Ionicons, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons'
 
 import { useAuth } from '../../contexts/AuthContext'
 import * as ROUTES from '../../constants/routes'
@@ -32,7 +34,7 @@ const logger = {
 
 const HomeScreen = () => {
   const navigation = useNavigation()
-  const { state: authState } = useAuth() // Không cần logout trực tiếp ở đây
+  const { state: authState } = useAuth()
   const { userInfo } = authState
 
   const [conversations, setConversations] = useState([])
@@ -41,62 +43,55 @@ const HomeScreen = () => {
   const [error, setError] = useState(null)
 
   const fetchConversations = useCallback(async (showLoadingIndicator = true) => {
-    if (showLoadingIndicator && conversations.length === 0) setIsLoading(true)
-    else if (!showLoadingIndicator) setIsLoading(true) // Vẫn hiện loading cho pull-to-refresh
-
+    logger.info('fetchConversations called, showLoadingIndicator:', showLoadingIndicator)
+    if (showLoadingIndicator) {
+        setIsLoading(true)
+    }
     setError(null)
     try {
       const response = await getUserConversationsApi()
       setConversations(response.data || [])
     } catch (err) {
-      logger.error('Lỗi khi tải danh sách hội thoại:', err.response?.data?.message || err.message)
+      logger.error('Lỗi khi tải danh sách hội thoại:', err.response?.data?.message || err.message, err)
       setError('Không thể tải danh sách hội thoại. Vui lòng thử lại.')
       setConversations([])
     } finally {
       setIsLoading(false)
     }
-  }, [conversations.length]) // conversations.length để re-run fetch khi list rỗng và cần loading
+  }, [])
 
   useFocusEffect(
     useCallback(() => {
       logger.info('HomeScreen focused, fetching conversations...')
-      fetchConversations(true) // Hiển thị loading indicator toàn màn hình nếu list rỗng
+      fetchConversations(true)
       return () => logger.info('HomeScreen unfocused')
-    }, [fetchConversations]) // Thêm fetchConversations vào dependencies
+    }, [fetchConversations])
   )
 
   const handleCreateConversation = async () => {
-    console.log('handleCreateConversation triggered, isCreatingConvo:', isCreatingConvo)
-    if (isCreatingConvo) return // Tránh gọi nhiều lần
-    setIsCreatingConvo(true)
-    // ...
-    try {
-    // ...
-    } catch (err) {
-    // ...
-    } finally {
-    console.log('handleCreateConversation finished, setting isCreatingConvo to false')
-    setIsCreatingConvo(false) // Đảm bảo luôn được set lại
-  }
+    logger.info('handleCreateConversation triggered')
+    if (isCreatingConvo) {
+      logger.warn('handleCreateConversation: Already creating a conversation.')
+      return
+    }
     setIsCreatingConvo(true)
     setError(null)
     try {
-      // titleOpt có thể được truyền vào đây nếu bạn có UI cho phép user nhập title trước khi tạo
-      const response = await createConversationApi(null) // title là null để backend tự tạo
+      const response = await createConversationApi(null)
       const newConversation = response.data
       if (newConversation && newConversation.id) {
         logger.info('Cuộc hội thoại mới được tạo:', newConversation.id)
-        // Tải lại danh sách để hiển thị conversation mới nhất ở đầu (do sắp xếp theo updatedAt)
-        await fetchConversations(false) // false để không hiện loading indicator toàn màn hình
+        await fetchConversations(false)
         navigation.navigate(ROUTES.CHAT_SCREEN, {
           conversationId: newConversation.id,
           conversationTitle: newConversation.title,
         })
       } else {
-        throw new Error('Phản hồi tạo hội thoại không hợp lệ.')
+        logger.error('Phản hồi tạo hội thoại không hợp lệ:', newConversation)
+        Alert.alert('Lỗi', 'Phản hồi tạo hội thoại không hợp lệ từ server.')
       }
     } catch (err) {
-      logger.error('Lỗi khi tạo hội thoại mới:', err.response?.data?.message || err.message)
+      logger.error('Lỗi khi tạo hội thoại mới:', err.response?.data?.message || err.message, err)
       Alert.alert('Lỗi', 'Không thể tạo cuộc hội thoại mới. Vui lòng thử lại.')
     } finally {
       setIsCreatingConvo(false)
@@ -104,6 +99,7 @@ const HomeScreen = () => {
   }
 
   const handleDeleteConversation = (conversationId, conversationTitle) => {
+    logger.info(`Attempting to delete conversation: ${conversationId}`)
     Alert.alert(
       'Xác nhận xóa',
       `Bạn có chắc chắn muốn xóa cuộc hội thoại "${conversationTitle || 'này'}" không? Hành động này không thể hoàn tác.`,
@@ -114,9 +110,9 @@ const HomeScreen = () => {
           style: 'destructive',
           onPress: async () => {
             try {
-              await deleteConversationApi(conversationId) 
+              await deleteConversationApi(conversationId)
               logger.info('Đã xóa hội thoại:', conversationId)
-              fetchConversations(false) // Tải lại danh sách, không hiện loading indicator toàn màn hình
+              fetchConversations(false)
             } catch (err) {
               logger.error('Lỗi khi xóa hội thoại:', conversationId, err.response?.data?.message || err.message)
               Alert.alert('Lỗi', 'Không thể xóa cuộc hội thoại. Vui lòng thử lại.')
@@ -128,32 +124,58 @@ const HomeScreen = () => {
   }
 
   const handleNavigateToChat = (conversationId, title) => {
+    logger.info(`Navigating to ChatScreen with conversationId: ${conversationId}, title: ${title}`)
     navigation.navigate(ROUTES.CHAT_SCREEN, {
       conversationId,
       conversationTitle: title,
     })
   }
 
+  
+  const handleNavigateToRelaxation = () => {
+    logger.info('Navigating to RelaxationScreen')
+
+    if (ROUTES.RELAXATION_SCREEN) {
+        navigation.navigate(ROUTES.RELAXATION_SCREEN)
+    } else {
+        logger.error('ROUTES.RELAXATION_SCREEN is not defined!')
+        Alert.alert('Lỗi', 'Chức năng Thư giãn đang được phát triển.')
+    }
+  }
+
   const renderHeader = () => (
     <View style={styles.headerContainer}>
-      {/* Nhóm MindCare và Nút Tạo Mới ở bên TRÁI */}
       <View style={styles.headerLeftGroup}>
-        <TouchableOpacity onPress={() => {console.log('MindCare logo pressed'); fetchConversations(false)}} style={styles.mindCareButton}Ư>
+        <TouchableOpacity
+          onPress={() => { logger.info('MindCare logo pressed - fetching conversations'), fetchConversations(false)}}
+          style={styles.mindCareButton}
+        >
           <Text style={styles.headerTitle}>MindCare</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={handleCreateConversation} style={styles.addButton} disabled={isCreatingConvo}>
+        <TouchableOpacity
+          onPress={() => { logger.info('Create new conversation button pressed in header'), handleCreateConversation() }}
+          style={styles.actionButton}
+          disabled={isCreatingConvo}
+        >
           {isCreatingConvo ? (
             <ActivityIndicator color={COLORS.PRIMARY} size="small" />
           ) : (
-            <Ionicons name="add-circle-outline" size={28} color={COLORS.PRIMARY} /> 
+            <Ionicons name="add-circle-outline" size={28} color={COLORS.PRIMARY} />
           )}
-           { <Text style={styles.addButtonText}>Tạo mới</Text> }
+          {!isCreatingConvo && <Text style={styles.actionButtonText}>Tạo mới</Text>}
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={handleNavigateToRelaxation} style={styles.actionButton}>
+          <MaterialCommunityIcons name="headphones" size={26} color={COLORS.PRIMARY} /> 
+          <Text style={styles.actionButtonText}>Thư giãn</Text>
         </TouchableOpacity>
       </View>
-      <TouchableOpacity onPress={() => {
-          console.log('Profile button in header pressed') // Test log
+
+      <TouchableOpacity
+        onPress={() => {
+          logger.info('Profile button in header pressed. Navigating to:', ROUTES.PROFILE_SCREEN)
           navigation.navigate(ROUTES.PROFILE_SCREEN)
-        }} 
+        }}
         style={styles.profileButton}
       >
         {userInfo?.avatarUrl ? (
@@ -202,17 +224,17 @@ const HomeScreen = () => {
         <View style={styles.centeredMessageContainer}>
           <MaterialIcons name="chat-bubble-outline" size={60} color={COLORS.TEXT_SECONDARY} />
           <Text style={styles.emptyMessage}>Hiện chưa có cuộc hội thoại nào.</Text>
-          <Text style={styles.emptySubMessage}>Nhấn "+" ở góc trên để bắt đầu trò chuyện.</Text>
+          <Text style={styles.emptySubMessage}>Nhấn "+" hoặc "Thư giãn" ở góc trên để bắt đầu.</Text>
         </View>
       )}
       {conversations.length > 0 && (
         <FlatList
           data={conversations}
           renderItem={renderConversationItem}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(item) => item.id?.toString() || `conv-${item}-${Date.now()}`} // Thêm Date.now() để tăng tính duy nhất
           contentContainerStyle={styles.listContainer}
-          onRefresh={() => fetchConversations(false)} // Kéo để refresh
-          refreshing={isLoading} // Hiển thị loading indicator khi refresh
+          onRefresh={() => fetchConversations(false)}
+          refreshing={isLoading}
         />
       )}
     </SafeAreaView>
@@ -229,40 +251,40 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 15,
-    paddingVertical: 10,
+    paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 0) + 10 : 10,
+    paddingBottom: 10,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.BORDER,
     backgroundColor: COLORS.BACKGROUND_SECONDARY,
   },
-    headerLeftGroup: { // Cho MindCare và nút Add
-      flexDirection: 'row',
-      alignItems: 'center',
+  headerLeftGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-    mindCareButton: {
-      paddingRight: 10, // Khoảng cách giữa MindCare và nút Add
+  mindCareButton: {
+    paddingRight: 12, 
   },
   headerTitle: {
     fontSize: 22,
     fontWeight: 'bold',
     color: COLORS.TEXT_PRIMARY,
   },
-  headerActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  addButton: {
-    paddingHorizontal: 8,
+  actionButton: { 
+    paddingHorizontal: 6, 
     paddingVertical: 5,
     flexDirection: 'row',
     alignItems: 'center',
+    marginLeft: 8, // Khoảng cách giữa các nút action
   },
-  addButtonText: {
+  actionButtonText: { // Text cho các nút action (Tạo mới, Thư giãn)
     color: COLORS.PRIMARY,
-    fontSize: 16,
-    marginLeft: 3,
+    fontSize: 15, // Có thể điều chỉnh kích thước
+    marginLeft: 4, // Khoảng cách giữa icon và text
+    fontWeight: '500',
   },
   profileButton: {
     padding: 5,
+    marginLeft: 8, // Đảm bảo có khoảng cách với nút action cuối cùng bên trái
   },
   avatar: {
     width: 32,

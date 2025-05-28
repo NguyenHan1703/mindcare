@@ -10,7 +10,7 @@ export default [
       parserOptions: {
         requireConfigFile: false,
         babelOptions: {
-          presets: ['@babel/preset-react'], // 👈 Cái này quan trọng
+          presets: ['@babel/preset-react'],
         },
         ecmaVersion: 'latest',
         sourceType: 'module',

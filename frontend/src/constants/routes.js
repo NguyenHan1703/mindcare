@@ -12,6 +12,7 @@ export const PROFILE_SCREEN = 'ProfileScreen' // Hồ sơ người dùng
 export const CHANGE_PASSWORD_SCREEN = 'ChangePasswordScreen' // Đổi mật khẩu (từ Profile)
 export const PROFILE_DETAIL_SCREEN = 'ProfileDetailScreen' // Quản lý thông tin chi tiết (từ Profile)
 export const STATISTIC_SCREEN = 'StatisticScreen' // Thống kê cảm xúc (từ Profile)
+export const RELAXATION_SCREEN = 'RelaxationScreen'
 
 // Màn hình của Quản trị viên (Admin Screens)
 export const ADMIN_DASHBOARD_SCREEN = 'AdminDashboardScreen' // Bảng điều khiển Admin

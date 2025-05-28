@@ -65,7 +65,8 @@ public class ConversationServiceImpl implements ConversationService {
                 defaultAiModelName
         );
         Conversation savedConversation = conversationRepository.save(conversation);
-        logger.info("New conversation created. ID: {}, UserID: {}", savedConversation.getId(), userId);
+        logger.info("CONVERSATION CREATED: ID='{}', UserID='{}' (from Conversation object), Title='{}'",
+                savedConversation.getId(), savedConversation.getUserId(), savedConversation.getTitle());
         return mapToConversationDto(savedConversation);
     }
 
@@ -90,6 +91,8 @@ public class ConversationServiceImpl implements ConversationService {
     @Override
     @Transactional
     public MessageDto saveUserMessage(String userId, String conversationId, MessageRequest messageRequest) {
+        logger.info("SAVE_USER_MESSAGE: Attempting to find conversation. Passed ConversationID='{}', Passed CurrentUserID='{}'",
+                conversationId, userId);
         Conversation conversation = conversationRepository.findByIdAndUserId(conversationId, userId)
                 .orElseThrow(() -> {
                     logger.warn("Attempt to save message to non-existent or unauthorized conversation. UserID: {}, ConvID: {}", userId, conversationId);

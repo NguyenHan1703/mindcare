@@ -11,6 +11,7 @@ import ProfileScreen from '../screens/user/ProfileScreen'
 import ChangePasswordScreen from '../screens/user/ChangePasswordScreen'
 import ProfileDetailScreen from '../screens/user/ProfileDetailScreen'
 import StatisticScreen from '../screens/user/StatisticScreen'
+import RelaxationScreen from '../screens/user/RelaxationScreen'
 import COLORS from '../constants/colors' // Để tùy chỉnh header nếu cần
 
 const Stack = createNativeStackNavigator()
@@ -42,11 +43,9 @@ const UserNavigator = () => {
       <Stack.Screen
         name={ROUTES.CHAT_SCREEN}
         component={ChatScreen}
-        options={({ route }) => ({
-          // Tiêu đề của ChatScreen sẽ được lấy từ params truyền vào khi navigate
-          // Ví dụ: route.params.title hoặc một tiêu đề mặc định
-          title: route.params?.conversationTitle || 'Hội thoại',
-        })}
+        options={{
+          title: 'Hội thoại',
+        }}
       />
       <Stack.Screen
         name={ROUTES.PROFILE_SCREEN}
@@ -74,6 +73,13 @@ const UserNavigator = () => {
         component={StatisticScreen}
         options={{
           title: 'Thống kê cảm xúc',
+        }}
+      />
+      <Stack.Screen
+        name={ROUTES.RELAXATION_SCREEN}
+        component={RelaxationScreen}
+        options={{
+          title: 'Thư Giãn',
         }}
       />
     </Stack.Navigator>

@@ -1,4 +1,3 @@
-// src/screens/user/ChatScreen.js
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import {
   View,
@@ -252,7 +251,7 @@ const ChatScreen = () => {
         <EmotionPicker
             isVisible={showEmotionPicker && aiAskingForEmotion && !dailyEmotionLoggedToday}
             onEmotionSelect={handleEmotionSelected}
-            promptMessage="An Tâm muốn biết bạn cảm thấy thế nào hôm nay:"
+            promptMessage="Mình muốn biết bạn cảm thấy thế nào hôm nay:"
         />
 
         <View style={styles.inputContainer}>
@@ -291,7 +290,7 @@ const styles = StyleSheet.create({
   keyboardAvoidingView: {
     flex: 1,
   },
-  centeredContainer: { // Style chung cho loading, error, empty khi messages list rỗng
+  centeredContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
@@ -336,7 +335,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderTopWidth: 1,
     borderTopColor: COLORS.BORDER,
-    backgroundColor: COLORS.BACKGROUND_SECONDARY, // Nền cho khu vực input
+    backgroundColor: COLORS.BACKGROUND_SECONDARY, 
   },
   textInput: {
     flex: 1,
@@ -345,7 +344,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.INPUT_BACKGROUND,
     borderRadius: 20,
     paddingHorizontal: 15,
-    paddingVertical: Platform.OS === 'ios' ? 10 : 0, // Điều chỉnh padding cho iOS
+    paddingVertical: Platform.OS === 'ios' ? 10 : 0, 
     fontSize: 16,
     color: COLORS.TEXT_PRIMARY,
     marginRight: 10,
@@ -356,7 +355,7 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     justifyContent: 'center',
     alignItems: 'center',
-    width: 44, // Kích thước nút gửi
+    width: 44, 
     height: 44,
   },
   sendButtonDisabled: {

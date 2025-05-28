@@ -1,4 +1,3 @@
-// src/theme/globalStyles.js
 import { StyleSheet, Platform } from 'react-native'
 import COLORS from '../constants/colors'
 import THEME from '../constants/theme'
