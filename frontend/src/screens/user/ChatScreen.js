@@ -183,7 +183,7 @@ const ChatScreen = () => {
       const confirmMessage = {
         id: `temp-emotion-confirm-${Date.now()}`,
         conversationId,
-        sender: 'USER', // Hoặc một sender đặc biệt như 'SYSTEM_MESSAGE' nếu bạn muốn style khác
+        sender: 'USER',
         content: `(Tôi đã ghi nhận cảm xúc hôm nay là: ${emotionValue})`,
         timestamp: new Date().toISOString(),
       }
@@ -233,7 +233,7 @@ const ChatScreen = () => {
            <View style={styles.centeredContainer}>
             <MaterialIcons name="forum" size={60} color={COLORS.TEXT_SECONDARY} />
             <Text style={styles.emptyChatMessage}>Bắt đầu cuộc trò chuyện!</Text>
-            <Text style={styles.emptyChatMessageSubtitle}>Gửi một tin nhắn để nhận phản hồi từ An Tâm.</Text>
+            <Text style={styles.emptyChatMessageSubtitle}>Gửi một tin nhắn để nhận phản hồi.</Text>
           </View>
         ) : (
           <FlatList

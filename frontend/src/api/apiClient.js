@@ -8,7 +8,7 @@ const apiClient = axios.create({
     'Content-Type': 'application/json',
     // Có thể thêm các headers mặc định khác ở đây nếu cần
   },
-  timeout: 15000, // Timeout sau 15 giây
+  timeout: 50000, // Timeout sau 50 giây
 })
 
 // Request Interceptor: Tự động đính kèm JWT token vào header Authorization

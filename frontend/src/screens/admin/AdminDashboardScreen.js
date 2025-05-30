@@ -165,36 +165,28 @@ const AdminDashboardScreen = () => {
   )
   
   const renderAdminProfileMenu = () => (
-    <Modal
-      transparent={true}
-      visible={isAdminProfileMenuVisible}
-      onRequestClose={() => setIsAdminProfileMenuVisible(false)}
-      animationType="fade"
-    >
-      <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPressOut={() => setIsAdminProfileMenuVisible(false)}>
-        <View style={styles.menuModalContainer}>
-          <Text style={styles.menuTitle}>{adminInfo?.username}</Text>
-          <TouchableOpacity style={styles.menuModalItem} onPress={() => {
-            setIsAdminProfileMenuVisible(false)
-            // Admin có thể xem/sửa profile của chính mình như một user bình thường
-            navigation.navigate(ROUTES.PROFILE_SCREEN) 
-          }}>
-            <Ionicons name="person-circle-outline" size={22} color={COLORS.PRIMARY} />
-            <Text style={styles.menuModalText}>Thông tin của tôi</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.menuModalItem, styles.deleteMenuItem]} onPress={() => {
-            setIsAdminProfileMenuVisible(false)
-            logout()
-          }}>
-            <MaterialCommunityIcons name="logout" size={22} color={COLORS.ERROR} />
-            <Text style={[styles.menuModalText, { color: COLORS.ERROR }]}>Đăng xuất</Text>
-          </TouchableOpacity>
-           <TouchableOpacity style={[styles.menuModalItem, styles.cancelMenuItem]} onPress={() => setIsAdminProfileMenuVisible(false)}>
-            <Text style={styles.menuModalText}>Hủy</Text>
-          </TouchableOpacity>
-        </View>
-      </TouchableOpacity>
-    </Modal>
+  <Modal
+    transparent={true}
+    visible={isAdminProfileMenuVisible}
+    onRequestClose={() => setIsAdminProfileMenuVisible(false)}
+    animationType="fade"
+  >
+    <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPressOut={() => setIsAdminProfileMenuVisible(false)}>
+      <View style={[styles.menuModalContainer, users.length === 1 && styles.singleOptionModal]}>
+        <Text style={styles.menuTitle}>{adminInfo?.username}</Text>
+        <TouchableOpacity style={[styles.menuModalItem, styles.deleteMenuItem]} onPress={() => {
+          setIsAdminProfileMenuVisible(false)
+          logout()
+        }}>
+          <MaterialCommunityIcons name="logout" size={22} color={COLORS.ERROR} />
+          <Text style={[styles.menuModalText, { color: COLORS.ERROR }]}>Đăng xuất</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.menuModalItem, styles.cancelMenuItem]} onPress={() => setIsAdminProfileMenuVisible(false)}>
+          <Text style={styles.menuModalText}>Hủy</Text>
+        </TouchableOpacity>
+      </View>
+    </TouchableOpacity>
+  </Modal>
   )
 
   const renderHeader = () => (
@@ -263,6 +255,10 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: COLORS.BACKGROUND_PRIMARY,
+  },
+  singleOptionModal: {
+    height: 150, // Giảm chiều cao modal khi chỉ có một tùy chọn
+    justifyContent: 'center', // Canh giữa nội dung trong modal
   },
   headerContainer: {
     flexDirection: 'row',
@@ -337,6 +333,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
     borderWidth: 1,
     borderColor: COLORS.BORDER,
+    minHeight: 200, // Đảm bảo modal vẫn có chiều cao tối thiểu khi có nhiều tùy chọn
   },
   menuTitle: {
     fontSize: 18,

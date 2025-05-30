@@ -5,6 +5,7 @@ import com.mindcare.backend.dto.admin.AdminUserViewDto;
 import com.mindcare.backend.dto.conversation.ConversationDto;
 import com.mindcare.backend.dto.conversation.MessageDto;
 import com.mindcare.backend.dto.emotion.EmotionStatsResponseDto; // Sử dụng lại DTO này
+import jakarta.validation.Valid;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -34,4 +35,6 @@ public interface AdminService {
 
     // Lấy tất cả tin nhắn của một cuộc hội thoại cụ thể
     List<MessageDto> getMessagesForConversation(String conversationId);
+
+    AdminUserViewDto createUserByAdmin(@Valid AdminUserUpdateRequestDto createRequest);
 }

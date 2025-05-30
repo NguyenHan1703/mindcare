@@ -112,10 +112,6 @@ public class ConversationController {
 
     /**
      * Gửi một tin nhắn mới vào một cuộc hội thoại.
-     * @param currentUser Người dùng đang đăng nhập
-     * @param conversationId ID của cuộc hội thoại (lấy từ URL path)
-     * @param messageRequest DTO chứa nội dung tin nhắn
-     * @return ResponseEntity chứa MessageDto của tin nhắn vừa gửi
      */
     @PostMapping("/{conversationId}/messages")
     @PreAuthorize("isAuthenticated()")
@@ -139,9 +135,6 @@ public class ConversationController {
 
     /**
      * Lấy lịch sử tin nhắn của một cuộc hội thoại.
-     * @param currentUser Người dùng đang đăng nhập
-     * @param conversationId ID của cuộc hội thoại (lấy từ URL path)
-     * @return ResponseEntity chứa danh sách MessageDto
      */
     @GetMapping("/{conversationId}/messages")
     @PreAuthorize("isAuthenticated()")

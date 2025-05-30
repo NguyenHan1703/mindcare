@@ -24,9 +24,4 @@ const API_BASE_URL = 'http://10.0.2.2:8080/api'
 // Hoặc nếu dùng Android Emulator:
 // const API_BASE_URL = 'http://10.0.2.2:8080/api';
 
-
-// Hãy chắc chắn rằng bạn đã chọn và cấu hình đúng API_BASE_URL ở trên.
-// Nếu không chắc, bạn có thể bắt đầu với 'http://localhost:8080/api' nếu dùng iOS Simulator
-// hoặc 'http://10.0.2.2:8080/api' nếu dùng Android Emulator.
-
 export { API_BASE_URL }

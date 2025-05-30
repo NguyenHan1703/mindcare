@@ -138,6 +138,7 @@ public class UserController {
         if (currentUser == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Lỗi: Người dùng chưa được xác thực."));
         }
+        // Kiểm tra tính hợp lệ của startDate và endDate
         if (startDate == null || endDate == null || startDate.isAfter(endDate)) {
             return ResponseEntity.badRequest().body(new MessageResponse("Lỗi: Ngày bắt đầu và kết thúc không hợp lệ."));
         }
@@ -149,7 +150,6 @@ public class UserController {
             return ResponseEntity.ok(responseDto);
         } catch (Exception e) {
             // Log lỗi chi tiết ở server
-            // logger.error("Error fetching emotion stats for user {}: {}", currentUser.getId(), e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new MessageResponse("Lỗi: Không thể lấy dữ liệu thống kê cảm xúc."));
         }

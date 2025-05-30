@@ -106,6 +106,7 @@ public class DailyEmotionLogServiceImpl implements DailyEmotionLogService {
                 ));
     }
 
+
     // Phương thức helper để map Entity sang DTO
     private DailyEmotionLogDto mapToDto(DailyEmotionLog dailyEmotionLog) {
         if (dailyEmotionLog == null) {

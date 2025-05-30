@@ -154,4 +154,17 @@ public class AdminController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Lỗi: Không thể lấy danh sách tin nhắn."));
         }
     }
+    @PostMapping("/users")
+    public ResponseEntity<?> createUserByAdmin(@Valid @RequestBody AdminUserUpdateRequestDto createRequest) {
+        try {
+            AdminUserViewDto createdUser = adminService.createUserByAdmin(createRequest);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+        } catch (RuntimeException e) {
+            logger.warn("Admin user creation failed: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Error creating user by admin:", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Lỗi: Không thể tạo người dùng."));
+        }
+    }
 }

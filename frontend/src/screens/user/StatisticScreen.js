@@ -18,7 +18,7 @@ import {
     EMOTIONS_LIST, // Dùng cho chú thích
     getEmotionVisual // Dùng để lấy thông tin visual của cảm xúc
 } from '../../constants/emotionDefinitions'
-import { getEmotionStats } from '../../api/emotion.api.js'
+import { getEmotionStatsApi } from '../../api/emotion.api.js'
 // import { useAuth } from '../../contexts/AuthContext'; // Không cần userId nếu API /me
 
 // Cấu hình tiếng Việt cho lịch (nếu chưa làm ở đâu đó global)
@@ -63,8 +63,8 @@ const StatisticScreen = () => {
     logger.info(`Workspaceing stats for month: ${formatDateForApi(firstDayOfMonth)} to ${formatDateForApi(lastDayOfMonth)}`)
 
     try {
-      // API getEmotionStats của bạn đã được thiết kế để lấy cho người dùng hiện tại (qua token)
-      const response = await getEmotionStats(formatDateForApi(firstDayOfMonth), formatDateForApi(lastDayOfMonth))
+      // API getEmotionStatsApi của bạn đã được thiết kế để lấy cho người dùng hiện tại (qua token)
+      const response = await getEmotionStatsApi(formatDateForApi(firstDayOfMonth), formatDateForApi(lastDayOfMonth))
       const statsData = response.data // { dailyLogs: [], emotionSummary: {} }
 
       const newMarkedDates = {}

@@ -47,8 +47,6 @@ export const getConversationMessagesApi = (conversationId) => {
  * Khi thành công, response.data sẽ là MessageDto của tin nhắn người dùng vừa gửi.
  */
 export const saveUserMessageApi = (conversationId, content) => {
-  // Backend endpoint: POST /api/conversations/{conversationId}/messages
-  // Backend DTO (MessageRequest) mong đợi { content: "..." }
   if (!conversationId) {
     return Promise.reject(new Error('conversationId là bắt buộc'))
   }

@@ -220,6 +220,36 @@ public class AdminServiceImpl implements AdminService {
         return new EmotionStatsResponseDto(dailyLogs, summary);
     }
 
+    @Override
+    @Transactional
+    public AdminUserViewDto createUserByAdmin(AdminUserUpdateRequestDto createRequest) {
+        logger.info("Admin request: Create new user");
+
+        // Kiểm tra nếu tên đăng nhập đã tồn tại
+        if (userRepository.existsByUsername(createRequest.getUsername())) {
+            throw new UserAlreadyExistsException("Lỗi: Tên đăng nhập '" + createRequest.getUsername() + "' đã được sử dụng!");
+        }
+
+        // Tạo đối tượng người dùng mới
+        User newUser = new User(createRequest.getUsername(), passwordEncoder.encode(createRequest.getPassword()));
+        newUser.setAvatarUrl(createRequest.getAvatarUrl());
+
+        // Tạo các vai trò (nếu có) và gán cho người dùng
+        Set<Role> roles = new HashSet<>();
+        for (String roleNameStr : createRequest.getRoles()) {
+            ERole eRole = ERole.valueOf(roleNameStr.trim().toUpperCase());
+            Role role = roleRepository.findByName(eRole)
+                    .orElseThrow(() -> new BadRequestException("Lỗi: Vai trò '" + roleNameStr + "' không hợp lệ!"));
+            roles.add(role);
+        }
+        newUser.setRoles(roles);
+
+        // Lưu người dùng mới vào database
+        User savedUser = userRepository.save(newUser);
+        logger.info("New user created successfully: {}", savedUser.getUsername());
+
+        return mapUserToAdminUserViewDto(savedUser);
+    }
     private AdminUserViewDto mapUserToAdminUserViewDto(User user) {
         if (user == null) return null;
         Set<String> roleNames = user.getRoles().stream()
