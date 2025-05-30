@@ -21,7 +21,8 @@ import COLORS from '../../constants/colors'
 import {
   getUserConversationsApi,
   createConversationApi,
-  deleteConversationApi
+  deleteConversationApi,
+  updateConversationTitleApi, // API để cập nhật tiêu đề
 } from '../../api/conversation.api.js'
 import ConversationItem from '../../components/user/ConversationItem'
 
@@ -45,7 +46,7 @@ const HomeScreen = () => {
   const fetchConversations = useCallback(async (showLoadingIndicator = true) => {
     logger.info('fetchConversations called, showLoadingIndicator:', showLoadingIndicator)
     if (showLoadingIndicator) {
-        setIsLoading(true)
+      setIsLoading(true)
     }
     setError(null)
     try {
@@ -98,6 +99,30 @@ const HomeScreen = () => {
     }
   }
 
+  // Mở menu tùy chọn khi nhấn vào biểu tượng ba chấm
+  const handleOpenMenu = (conversation) => {
+    setSelectedConversation(conversation)
+    setIsMenuVisible(true)
+  }
+
+  // Đóng menu
+  const handleCloseMenu = () => {
+    setIsMenuVisible(false)
+    setSelectedConversation(null)
+  }
+
+  // Cập nhật tiêu đề cuộc hội thoại
+  const handleUpdateConversationTitle = async (conversationId, newTitle) => {
+    try {
+      // Gọi API để cập nhật tiêu đề cuộc hội thoại
+      await updateConversationTitleApi(conversationId, newTitle)
+      fetchConversations()
+    } catch (err) {
+      Alert.alert('Lỗi', 'Không thể cập nhật tiêu đề cuộc hội thoại. Vui lòng thử lại.')
+    }
+  }
+
+  // Xóa cuộc hội thoại
   const handleDeleteConversation = (conversationId, conversationTitle) => {
     logger.info(`Attempting to delete conversation: ${conversationId}`)
     Alert.alert(
@@ -131,15 +156,13 @@ const HomeScreen = () => {
     })
   }
 
-  
   const handleNavigateToRelaxation = () => {
     logger.info('Navigating to RelaxationScreen')
-
     if (ROUTES.RELAXATION_SCREEN) {
-        navigation.navigate(ROUTES.RELAXATION_SCREEN)
+      navigation.navigate(ROUTES.RELAXATION_SCREEN)
     } else {
-        logger.error('ROUTES.RELAXATION_SCREEN is not defined!')
-        Alert.alert('Lỗi', 'Chức năng Thư giãn đang được phát triển.')
+      logger.error('ROUTES.RELAXATION_SCREEN is not defined!')
+      Alert.alert('Lỗi', 'Chức năng Thư giãn đang được phát triển.')
     }
   }
 
@@ -194,6 +217,7 @@ const HomeScreen = () => {
       updatedAt={item.updatedAt ? new Date(item.updatedAt).toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' }) : 'N/A'}
       onPress={handleNavigateToChat}
       onDelete={handleDeleteConversation}
+      onUpdate={handleUpdateConversationTitle} // Truyền vào hàm cập nhật tiêu đề
     />
   )
 
@@ -231,7 +255,7 @@ const HomeScreen = () => {
         <FlatList
           data={conversations}
           renderItem={renderConversationItem}
-          keyExtractor={(item) => item.id?.toString() || `conv-${item}-${Date.now()}`} // Thêm Date.now() để tăng tính duy nhất
+          keyExtractor={(item) => item.id?.toString() || `conv-${item}-${Date.now()}`}
           contentContainerStyle={styles.listContainer}
           onRefresh={() => fetchConversations(false)}
           refreshing={isLoading}
@@ -262,7 +286,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   mindCareButton: {
-    paddingRight: 12, 
+    paddingRight: 12,
   },
   headerTitle: {
     fontSize: 22,
@@ -274,17 +298,17 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     flexDirection: 'row',
     alignItems: 'center',
-    marginLeft: 8, // Khoảng cách giữa các nút action
+    marginLeft: 8,
   },
-  actionButtonText: { // Text cho các nút action (Tạo mới, Thư giãn)
+  actionButtonText: { 
     color: COLORS.PRIMARY,
-    fontSize: 15, // Có thể điều chỉnh kích thước
-    marginLeft: 4, // Khoảng cách giữa icon và text
+    fontSize: 15,
+    marginLeft: 4,
     fontWeight: '500',
   },
   profileButton: {
     padding: 5,
-    marginLeft: 8, // Đảm bảo có khoảng cách với nút action cuối cùng bên trái
+    marginLeft: 8,
   },
   avatar: {
     width: 32,
@@ -320,7 +344,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   retryButton: {
-    marginTop:10,
+    marginTop: 10,
     backgroundColor: COLORS.PRIMARY,
     paddingVertical: 10,
     paddingHorizontal: 20,

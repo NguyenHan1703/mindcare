@@ -1,34 +1,70 @@
-import React from 'react'
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
-import { Ionicons } from '@expo/vector-icons' // Sử dụng icon từ Expo
-import COLORS from '../../constants/colors' // Import màu sắc
+import React, { useState } from 'react'
+import { View, Text, TouchableOpacity, StyleSheet, TextInput } from 'react-native'
+import { Ionicons } from '@expo/vector-icons'
+import COLORS from '../../constants/colors'
 
-const ConversationItem = ({ id, title, updatedAt, onPress, onDelete }) => {
+const ConversationItem = ({ id, title, updatedAt, onPress, onDelete, onUpdate }) => {
+  const [isEditing, setIsEditing] = useState(false)
+  const [newTitle, setNewTitle] = useState(title)
+
   const handleItemPress = () => {
     if (onPress) {
-      onPress(id, title) // Gọi hàm onPress với id và title
+      onPress(id, title)
     }
   }
 
   const handleDeletePress = () => {
     if (onDelete) {
-      onDelete(id, title) // Gọi hàm onDelete với id và title
+      onDelete(id, title)
     }
+  }
+
+  const handleEditPress = () => {
+    setIsEditing(true)
+  }
+
+  const handleTitleChange = (text) => {
+    setNewTitle(text)
+  }
+
+  const handleTitleBlur = () => {
+    if (newTitle.trim() !== '' && newTitle !== title) {
+      onUpdate(id, newTitle) // Gọi hàm để cập nhật tiêu đề
+    }
+    setIsEditing(false)
   }
 
   return (
     <TouchableOpacity style={styles.container} onPress={handleItemPress} activeOpacity={0.7}>
       <View style={styles.textContainer}>
-        <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
-          {title || 'Cuộc hội thoại không tên'}
-        </Text>
+        {isEditing ? (
+          <TextInput
+            style={[styles.title, styles.editingTitle]}
+            value={newTitle}
+            onChangeText={handleTitleChange}
+            onBlur={handleTitleBlur}
+            autoFocus={true}
+          />
+        ) : (
+          <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
+            {title || 'Cuộc hội thoại không tên'}
+          </Text>
+        )}
         <Text style={styles.updatedAt} numberOfLines={1} ellipsizeMode="tail">
           Cập nhật: {updatedAt || 'Không rõ'}
         </Text>
       </View>
-      <TouchableOpacity onPress={handleDeletePress} style={styles.deleteButton} activeOpacity={0.6}>
-        <Ionicons name="trash-outline" size={24} color={COLORS.ERROR} />
-      </TouchableOpacity>
+      <View style={styles.iconContainer}>
+        {/* Icon Đổi tên */}
+        <TouchableOpacity onPress={handleEditPress} style={styles.iconButton}>
+          <Ionicons name="create-outline" size={22} color={COLORS.PRIMARY} />
+        </TouchableOpacity>
+
+        {/* Icon Xóa */}
+        <TouchableOpacity onPress={handleDeletePress} style={styles.iconButton}>
+          <Ionicons name="trash-outline" size={22} color={COLORS.ERROR} />
+        </TouchableOpacity>
+      </View>
     </TouchableOpacity>
   )
 }
@@ -38,28 +74,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: COLORS.BACKGROUND_SECONDARY, // Màu nền cho item
+    backgroundColor: COLORS.BACKGROUND_SECONDARY,
     paddingVertical: 15,
     paddingHorizontal: 20,
-    marginVertical: 6,      // Khoảng cách giữa các item
-    marginHorizontal: 15,   // Khoảng cách với lề màn hình
-    borderRadius: 10,       // Bo góc
+    marginVertical: 6,
+    marginHorizontal: 15,
+    borderRadius: 10,
     borderWidth: 1,
-    borderColor: COLORS.BORDER, // Viền nhẹ
-    // Thêm hiệu ứng đổ bóng nhẹ nếu muốn (tùy thuộc vào Platform)
-    // shadowColor: COLORS.BLACK,
-    // shadowOffset: { width: 0, height: 1 },
-    // shadowOpacity: 0.2,
-    // shadowRadius: 2,
-    // elevation: 3, // Cho Android
+    borderColor: COLORS.BORDER,
   },
   textContainer: {
-    flex: 1, // Cho phép text co giãn và chiếm phần lớn không gian
-    marginRight: 10, // Khoảng cách với nút xóa
+    flex: 1,
+    marginRight: 10,
   },
   title: {
     fontSize: 17,
-    fontWeight: '600', // Semi-bold
+    fontWeight: '600',
     color: COLORS.TEXT_PRIMARY,
     marginBottom: 5,
   },
@@ -67,9 +97,21 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: COLORS.TEXT_SECONDARY,
   },
-  deleteButton: {
-    padding: 8, // Tăng vùng chạm cho nút xóa
+  iconContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  iconButton: {
+    padding: 8,
     marginLeft: 10,
+  },
+  editingTitle: {
+    color: COLORS.TEXT_PRIMARY,
+    backgroundColor: COLORS.BACKGROUND_LIGHT,
+    borderColor: COLORS.PRIMARY,
+    borderWidth: 1,
+    borderRadius: 4,
+    padding: 8,
   },
 })
 

@@ -68,4 +68,16 @@ export const deleteConversationApi = (conversationId) => {
   return apiClient.delete(`/conversations/${conversationId}`)
 }
 
-// Các hàm API khác liên quan đến conversation có thể được thêm vào đây sau.
+/**
+ * Gọi API để cập nhật tiêu đề của một cuộc hội thoại.
+ * @param {string} conversationId ID của cuộc hội thoại cần cập nhật tiêu đề.
+ * @param {string} newTitle Tiêu đề mới cho cuộc hội thoại.
+ * @returns {Promise} Promise trả về từ Axios (apiClient).
+ * Khi thành công, response.data sẽ chứa ConversationDto của cuộc hội thoại đã được cập nhật.
+ */
+export const updateConversationTitleApi = (conversationId, newTitle) => {
+  if (!conversationId || !newTitle) {
+    return Promise.reject(new Error('conversationId và newTitle là bắt buộc'))
+  }
+  return apiClient.put(`/conversations/${conversationId}/title`, { title: newTitle })
+}

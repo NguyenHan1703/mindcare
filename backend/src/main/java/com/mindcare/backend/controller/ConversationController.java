@@ -157,9 +157,6 @@ public class ConversationController {
 
     /**
      * Xóa một cuộc hội thoại.
-     * @param currentUser Người dùng đang đăng nhập
-     * @param conversationId ID của cuộc hội thoại cần xóa (lấy từ URL path)
-     * @return ResponseEntity không có nội dung (204 No Content) nếu thành công
      */
     @DeleteMapping("/{conversationId}")
     @PreAuthorize("isAuthenticated()")
@@ -177,6 +174,32 @@ public class ConversationController {
         } catch (Exception e) {
             // logger.error("Error deleting conversation {} for user {}: {}", conversationId, currentUser.getId(), e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Lỗi: Không thể xóa cuộc hội thoại."));
+        }
+    }
+    @PutMapping("/{conversationId}/title")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> updateConversationTitle(
+            @AuthenticationPrincipal UserDetailsImpl currentUser,
+            @PathVariable String conversationId,
+            @Valid @RequestBody CreateConversationRequestDto updateRequest) {  // Sử dụng lại CreateConversationRequestDto
+
+        if (currentUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Lỗi: Người dùng chưa được xác thực."));
+        }
+
+        try {
+            // Gọi Service để cập nhật tiêu đề cuộc hội thoại
+            Optional<ConversationDto> updatedConversationDto = conversationService.updateConversationTitle(currentUser.getId(), conversationId, updateRequest.getTitle());
+
+            if (updatedConversationDto.isPresent()) {
+                // Trả về cuộc hội thoại đã được cập nhật
+                return ResponseEntity.ok(updatedConversationDto.get());
+            } else {
+                // Nếu không tìm thấy cuộc hội thoại
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Không tìm thấy cuộc hội thoại hoặc bạn không có quyền truy cập."));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Lỗi: Không thể cập nhật tiêu đề cuộc hội thoại."));
         }
     }
 }

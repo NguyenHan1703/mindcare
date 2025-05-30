@@ -3,6 +3,7 @@ package com.mindcare.backend.service.interfaces;
 import com.mindcare.backend.dto.conversation.ConversationDto;
 import com.mindcare.backend.dto.conversation.MessageDto;
 import com.mindcare.backend.dto.conversation.MessageRequest;
+import jakarta.validation.constraints.Size;
 
 import java.util.List;
 import java.util.Optional; // Sử dụng Optional cho title
@@ -31,4 +32,7 @@ public interface ConversationService {
 
     // Xóa một cuộc hội thoại và tất cả các tin nhắn liên quan.
     void deleteConversation(String userId, String conversationId);
+
+    // Sửa tittle hội thoại
+    Optional<ConversationDto> updateConversationTitle(String id, String conversationId, @Size(max = 255, message = "Tiêu đề không được vượt quá 255 ký tự") String title);
 }

@@ -188,7 +188,30 @@ public class ConversationServiceImpl implements ConversationService {
         logger.info("Deleting conversation with ID: {} for UserID: {}", conversationId, userId);
         conversationRepository.delete(conversation);
     }
+    // Sửa tiêu đề hội thoại
+    @Override
+    @Transactional
+    public Optional<ConversationDto> updateConversationTitle(String userId, String conversationId, String newTitle) {
+        // Tìm kiếm cuộc hội thoại theo ID và UserID
+        Optional<Conversation> conversationOpt = conversationRepository.findByIdAndUserId(conversationId, userId);
 
+        if (conversationOpt.isPresent()) {
+            Conversation conversation = conversationOpt.get();
+
+            // Cập nhật tiêu đề mới
+            conversation.setTitle(newTitle);
+            conversation.setUpdatedAt(LocalDateTime.now()); // Cập nhật thời gian chỉnh sửa
+
+            // Lưu cuộc hội thoại đã được cập nhật
+            Conversation updatedConversation = conversationRepository.save(conversation);
+
+            // Trả về DTO đã được cập nhật
+            return Optional.of(mapToConversationDto(updatedConversation));
+        }
+
+        // Nếu không tìm thấy cuộc hội thoại, trả về Optional.empty
+        return Optional.empty();
+    }
     // --- Helper methods to map entities to DTOs ---
     private ConversationDto mapToConversationDto(Conversation conversation) {
         if (conversation == null) return null;
