@@ -64,21 +64,8 @@ public class GemmaChatServiceImpl implements AiChatService {
             }
         }
 
-        // 3. Thêm tin nhắn hiện tại của người dùng
-        // (Lưu ý: tin nhắn người dùng hiện tại đã có trong conversationHistory nếu logic ở ConversationServiceImpl lấy full history)
-        // Nếu conversationHistory không bao gồm tin nhắn userMessage hiện tại, bạn cần thêm nó ở đây:
-        // messagesForOllama.add(new OllamaChatMessage("user", userMessage));
-        // Tuy nhiên, theo logic trước đó trong ConversationServiceImpl, `conversationHistoryForAI` đã bao gồm tin nhắn user mới nhất.
-        // Để tránh lặp lại, ta có thể giả định `conversationHistory` đã chứa tất cả messages cần thiết bao gồm cả `userMessage` gần nhất.
-        // Hoặc, AiChatService có thể chỉ nhận List<OllamaChatMessage> đã được chuẩn bị sẵn.
-        // Hiện tại, AiChatService nhận userMessage riêng, nên ta sẽ thêm nó vào messagesForOllama
-        // nếu nó chưa có trong conversationHistory (cần làm rõ logic này ở ConversationServiceImpl)
-        // Giả sử conversationHistory là lịch sử TRƯỚC userMessage này:
-        // (Bỏ comment dòng dưới nếu conversationHistory không bao gồm userMessage hiện tại)
-        // messagesForOllama.add(new OllamaChatMessage("user", userMessage));
 
-
-        // 4. Tạo Request Body cho Ollama
+        // 3. Tạo Request Body cho Ollama
         OllamaChatRequest ollamaRequest = new OllamaChatRequest();
         ollamaRequest.setModel(this.ollamaModelName);
         ollamaRequest.setMessages(messagesForOllama); // messagesForOllama nên là toàn bộ context bao gồm cả tin nhắn user mới nhất
@@ -86,7 +73,7 @@ public class GemmaChatServiceImpl implements AiChatService {
         // Ví dụ options:
         // ollamaRequest.setOptions(Map.of("temperature", 0.7));
 
-        // 5. Gọi API Ollama bằng WebClient
+        // 4. Gọi API Ollama bằng WebClient
         try {
             logger.info("Sending request to Ollama model: {}. Number of messages in context: {}", this.ollamaModelName, messagesForOllama.size());
             OllamaChatResponse ollamaResponse = webClient.post()
@@ -103,16 +90,16 @@ public class GemmaChatServiceImpl implements AiChatService {
                 return ollamaResponse.getMessage().getContent();
             } else {
                 logger.error("Received invalid or empty content from Ollama. Response: {}", ollamaResponse);
-                // NÉM AiServiceException THAY VÌ TRẢ VỀ CHUỖI LỖI
+                // NÉM AiServiceException
                 throw new AiServiceException("Phản hồi không hợp lệ hoặc rỗng từ dịch vụ AI.");
             }
         } catch (WebClientResponseException e) { // Bắt lỗi HTTP cụ thể từ WebClient
             logger.error("Ollama API error for conversationId {}: Status Code {}, Body {}", conversationId, e.getStatusCode(), e.getResponseBodyAsString(), e);
-            // NÉM AiServiceException THAY VÌ TRẢ VỀ CHUỖI LỖI
+            // NÉM AiServiceException
             throw new AiServiceException("Lỗi từ dịch vụ AI: " + e.getStatusCode() + " - " + e.getResponseBodyAsString(), e);
         } catch (Exception e) { // Bắt các lỗi khác (ví dụ: timeout, connection error)
             logger.error("Error calling Ollama API for conversationId {}: {}", conversationId, e.getMessage(), e);
-            // NÉM AiServiceException THAY VÌ TRẢ VỀ CHUỖI LỖI
+            // NÉM AiServiceException
             throw new AiServiceException("Lỗi khi giao tiếp với dịch vụ AI: " + e.getMessage(), e);
         }
     }

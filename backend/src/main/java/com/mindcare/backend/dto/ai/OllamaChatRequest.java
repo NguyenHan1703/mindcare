@@ -10,10 +10,10 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OllamaChatRequest {
-    private String model;                       // Tên model trong Ollama (ví dụ: "gemma:7b")
+    private String model;                       // Tên model trong Ollama
     private List<OllamaChatMessage> messages;   // Lịch sử tin nhắn và tin nhắn hiện tại
     private String format;                      // Tùy chọn: "json" để yêu cầu output là JSON (nếu model hỗ trợ)
-    private Map<String, Object> options;        // Tùy chọn: Các tham số như temperature, top_p, seed,...
+    private Map<String, Object> options;
     private boolean stream = false;             // Mặc định là false để nhận response hoàn chỉnh
     // private String template;                 // Tùy chọn: Template cho prompt
     // private String system;                   // Tùy chọn: System prompt (có thể đặt trong messages với role "system")

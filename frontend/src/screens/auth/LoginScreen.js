@@ -9,20 +9,20 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Alert, // Để hiển thị thông báo lỗi đơn giản
+  Alert, 
 } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
-import { useAuth } from '../../contexts/AuthContext' // Import useAuth
-import * as ROUTES from '../../constants/routes' // Import tên các routes
-import COLORS from '../../constants/colors' // Import màu sắc
+import { useAuth } from '../../contexts/AuthContext' 
+import * as ROUTES from '../../constants/routes' 
+import COLORS from '../../constants/colors' 
 
 const LoginScreen = () => {
   const navigation = useNavigation()
-  const { login, state: authState, clearError } = useAuth() // Lấy hàm login và state từ AuthContext
+  const { login, state: authState, clearError } = useAuth() 
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [isSubmitting, setIsSubmitting] = useState(false) // State loading cục bộ cho nút bấm
+  const [isSubmitting, setIsSubmitting] = useState(false) 
 
   // Xóa lỗi khi màn hình được focus lại hoặc khi người dùng bắt đầu nhập liệu
   useEffect(() => {
@@ -48,12 +48,7 @@ const LoginScreen = () => {
 
     try {
       await login(username, password)
-      // Nếu đăng nhập thành công, RootNavigator sẽ tự động chuyển màn hình
-      // do userToken trong AuthContext thay đổi.
-      // Không cần gọi navigation.navigate() ở đây cho trường hợp thành công.
     } catch (error) {
-      // Lỗi đã được set trong authState.error bởi AuthContext
-      // Alert.alert('Đăng nhập thất bại', authState.error || error.message); // authState.error có thể chưa kịp cập nhật ngay
       Alert.alert('Đăng nhập thất bại', error.message || 'Đã có lỗi xảy ra.')
     } finally {
       setIsSubmitting(false)

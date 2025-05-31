@@ -19,6 +19,4 @@ public class ForgotPasswordRequestDto {
     private String newPassword;
 
     // Frontend sẽ có trường "Nhập lại mật khẩu mới" để xác nhận,
-    // nhưng chỉ cần gửi newPassword lên backend là đủ cho phiên bản đơn giản này.
-    // Việc so sánh confirmPassword nên được thực hiện ở frontend trước khi gửi.
 }

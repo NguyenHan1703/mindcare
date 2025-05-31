@@ -41,7 +41,7 @@ public class Message {
         this.content = content;
     }
 
-    // Constructor với tất cả các trường (nếu cần)
+    // Constructor với tất cả các trường
     public Message(String id, String conversationId, String sender, String content, LocalDateTime timestamp) {
         this.id = id;
         this.conversationId = conversationId;

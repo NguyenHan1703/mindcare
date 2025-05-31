@@ -12,10 +12,8 @@ import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/nativ
 import { MaterialIcons } from '@expo/vector-icons'
 
 import COLORS from '../../constants/colors'
-// Giả định hàm này đã được tạo trong admin.api.js (PD #29.1)
 import { getMessagesForConversationByAdminApi } from '../../api/admin.api.js' 
-import MessageBubble from '../../components/user/MessageBubble' // Tái sử dụng component này
-// import { useAuth } from '../../contexts/AuthContext'; // Không cần trực tiếp ở đây vì quyền admin đã được kiểm tra ở navigator
+import MessageBubble from '../../components/user/MessageBubble'
 
 // Logger đơn giản
 const logger = {
@@ -82,10 +80,6 @@ const AdminUserChatViewScreen = () => {
   const renderItem = ({ item }) => (
     <MessageBubble
       message={item}
-      // Admin xem, nên 'isCurrentUser' sẽ luôn dựa trên sender của tin nhắn
-      // Nếu bạn muốn phân biệt tin nhắn của targetUser, bạn có thể truyền targetUserId
-      // và so sánh item.senderId (nếu MessageDto có senderId)
-      // Hiện tại, MessageDto có sender là "USER" hoặc "AI"
       isCurrentUser={item.sender === 'USER'} 
     />
   )
@@ -134,9 +128,7 @@ const AdminUserChatViewScreen = () => {
         renderItem={renderItem}
         keyExtractor={(item, index) => item.id?.toString() || `msg-admin-${index}-${Date.now()}`}
         contentContainerStyle={styles.messagesListContainer}
-        // Không có onRefresh vì đây là view tĩnh, trừ khi bạn muốn admin có thể refresh
       />
-      {/* Không có ô nhập tin nhắn cho admin ở màn hình này */}
     </SafeAreaView>
   )
 }

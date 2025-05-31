@@ -27,12 +27,12 @@ const logger = {
   error: (...args) => console.error('RelaxationScreen [ERROR]', ...args),
 }
 
-// Danh sách các hình nền (bạn cần thay thế bằng đường dẫn require thực tế)
+// Danh sách các hình nền 
 const BACKGROUND_IMAGES = [
   require('../../../assets/images/relaxation/nature01.jpg'),
   require('../../../assets/images/relaxation/cat01.jpg'),
   require('../../../assets/images/relaxation/boat01.jpg'),
-  // Thêm các hình ảnh khác nếu muốn
+  
 ]
 
 const RelaxationScreen = () => {
@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
     paddingTop: THEME.SPACING.MEDIUM, // Khoảng cách từ đầu màn hình đến danh sách
     paddingBottom: THEME.SPACING.LARGE,
   },
-  screenTitle: { // Nếu bạn muốn tiêu đề riêng trong màn hình
+  screenTitle: {
     fontSize: THEME.FONT_SIZES.H2,
     color: COLORS.WHITE,
     fontWeight: THEME.FONT_WEIGHTS.BOLD,

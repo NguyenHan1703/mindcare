@@ -33,8 +33,6 @@ const AdminUserListItem = ({ user, onOpenOptions }) => {
         <Text style={styles.roleText} numberOfLines={1} ellipsizeMode="tail">
           Vai trò: {formattedRoles}
         </Text>
-        {/* Bạn có thể thêm các thông tin khác như email, ngày tạo nếu cần */}
-        {/* <Text style={styles.emailText}>{user.email || 'Không có email'}</Text> */}
       </View>
       <TouchableOpacity onPress={handleOptionsPress} style={styles.optionsButton} activeOpacity={0.7}>
         <Ionicons name="ellipsis-vertical" size={24} color={COLORS.TEXT_SECONDARY} />
@@ -55,11 +53,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     borderColor: COLORS.BORDER,
-    // elevation: 2, // Cho Android
-    // shadowColor: COLORS.BLACK, // Cho iOS
-    // shadowOffset: { width: 0, height: 1 },
-    // shadowOpacity: 0.1,
-    // shadowRadius: 2,
   },
   avatar: {
     width: 48,
@@ -71,7 +64,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: COLORS.INPUT_BACKGROUND, // Hoặc một màu nền khác
+    backgroundColor: COLORS.INPUT_BACKGROUND,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 15,
@@ -89,11 +82,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: COLORS.TEXT_SECONDARY,
   },
-  // emailText: { // Nếu bạn hiển thị email
-  //   fontSize: 13,
-  //   color: COLORS.TEXT_TERTIARY || COLORS.GRAY_MEDIUM, // Bạn có thể cần định nghĩa TEXT_TERTIARY
-  //   marginTop: 2,
-  // },
   optionsButton: {
     paddingLeft: 10, // Tăng vùng chạm cho nút options
     paddingVertical: 8,

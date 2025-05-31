@@ -212,7 +212,7 @@ public class ConversationServiceImpl implements ConversationService {
         // Nếu không tìm thấy cuộc hội thoại, trả về Optional.empty
         return Optional.empty();
     }
-    // --- Helper methods to map entities to DTOs ---
+    // Helper methods to map entities to DTOs
     private ConversationDto mapToConversationDto(Conversation conversation) {
         if (conversation == null) return null;
         return new ConversationDto(

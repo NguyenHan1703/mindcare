@@ -53,12 +53,6 @@ const ProfileDetailScreen = () => {
         Alert.alert('Cần quyền truy cập', 'Ứng dụng cần quyền truy cập vào thư viện ảnh để bạn có thể chọn avatar.')
         return false
       }
-      // Có thể yêu cầu thêm quyền camera nếu bạn có chức năng chụp ảnh
-      // const cameraStatus = await ImagePicker.requestCameraPermissionsAsync();
-      // if (cameraStatus.status !== 'granted') {
-      //   Alert.alert('Cần quyền truy cập', 'Ứng dụng cần quyền truy cập vào camera.');
-      //   return false;
-      // }
     }
     return true
   }
@@ -97,23 +91,12 @@ const ProfileDetailScreen = () => {
     if (selectedAvatarUri && selectedAvatarUri !== userInfo?.avatarUrl) {
       // Nếu selectedAvatarUri là một URI cục bộ (file://...)
       if (selectedAvatarUri.startsWith('file://')) {
-        // TODO: Triển khai logic upload ảnh lên server/dịch vụ lưu trữ
-        // Sau khi upload, bạn sẽ nhận được một public URL.
-        // Ví dụ: finalAvatarUrl = await uploadImageToServer(selectedAvatarUri);
-        // Tạm thời, chúng ta có thể gửi URI cục bộ (backend sẽ lưu nó, nhưng nó không dùng được)
-        // Hoặc bạn có thể cảnh báo người dùng rằng upload chưa được hỗ trợ đầy đủ.
-        // Để minh họa, chúng ta sẽ gửi URI đã chọn nếu nó khác URI cũ.
-        // Trong dự án thực tế, bạn KHÔNG NÊN gửi file URI trực tiếp trừ khi backend có cơ chế đặc biệt.
         Alert.alert(
             'Thông báo',
             'Chức năng upload avatar đang được phát triển. Hiện tại, avatar mới chỉ hiển thị tạm thời trên thiết bị này sau khi lưu.'
         )
-        finalAvatarUrl = selectedAvatarUri // Gửi URI cục bộ cho mục đích demo (backend sẽ lưu chuỗi này)
-                                            // Hoặc bạn có thể quyết định không gửi nếu là file URI:
-                                            // finalAvatarUrl = userInfo?.avatarUrl; // Giữ URL cũ
-                                            // setLocalError("Chức năng upload avatar chưa hoàn thiện.");
+        finalAvatarUrl = selectedAvatarUri 
       } else {
-        // Nếu selectedAvatarUri đã là một URL (ví dụ người dùng tự dán URL)
         finalAvatarUrl = selectedAvatarUri
       }
     }
@@ -137,7 +120,6 @@ const ProfileDetailScreen = () => {
       updateUserInfo(response.data) // Cập nhật userInfo trong AuthContext
       setSuccessMessage('Cập nhật thông tin thành công!')
       Alert.alert('Thành công', 'Thông tin cá nhân của bạn đã được cập nhật.')
-      // navigation.goBack(); // Tùy chọn: tự động quay lại sau khi thành công
     } catch (err) {
       const errorMessage = err.response?.data?.message || err.message || 'Cập nhật thất bại. Vui lòng thử lại.'
       setLocalError(errorMessage)
@@ -151,9 +133,6 @@ const ProfileDetailScreen = () => {
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.scrollViewContainer}>
         <View style={styles.container}>
-          {/* Header có nút "< Quay lại" sẽ do Stack Navigator cung cấp */}
-          {/* Tiêu đề "Quản lý thông tin" cũng do Stack Navigator đặt */}
-          {/* <Text style={styles.title}>Quản lý thông tin</Text> */}
 
           {localError && <Text style={styles.errorText}>{localError}</Text>}
           {successMessage && !localError && <Text style={styles.successText}>{successMessage}</Text>}
@@ -182,19 +161,6 @@ const ProfileDetailScreen = () => {
             autoCapitalize="none"
             selectionColor={COLORS.PRIMARY}
           />
-          
-          {/* (Tùy chọn) Nếu bạn muốn người dùng nhập URL avatar trực tiếp */}
-          {/* <Text style={styles.label}>URL Avatar (tùy chọn):</Text>
-          <TextInput
-            style={styles.input}
-            value={selectedAvatarUri || ''} // Hiển thị URI đã chọn hoặc URL hiện tại
-            onChangeText={setSelectedAvatarUri}
-            placeholder="Nhập URL avatar"
-            placeholderTextColor={COLORS.TEXT_SECONDARY}
-            autoCapitalize="none"
-            selectionColor={COLORS.PRIMARY}
-          /> */}
-
 
           <TouchableOpacity
             style={[styles.button, isSubmitting ? styles.buttonDisabled : {}]}
@@ -220,20 +186,12 @@ const styles = StyleSheet.create({
   },
   scrollViewContainer: {
     flexGrow: 1,
-    // justifyContent: 'center', // Bỏ nếu muốn form ở trên cùng
   },
   container: {
     flex: 1,
     paddingHorizontal: 20,
     paddingVertical: 20,
   },
-  // title: { // Tiêu đề đã được đặt bởi Navigator
-  //   fontSize: 28,
-  //   fontWeight: 'bold',
-  //   color: COLORS.TEXT_PRIMARY,
-  //   marginBottom: 30,
-  //   textAlign: 'center',
-  // },
   avatarContainer: {
     alignSelf: 'center',
     marginBottom: 30,

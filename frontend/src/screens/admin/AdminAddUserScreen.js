@@ -67,7 +67,7 @@ const AdminAddUserScreen = () => {
         newRoles.add(roleValue)
       }
       // Đảm bảo nếu không có role nào được chọn, thì tự động chọn ROLE_USER
-      // Hoặc bạn có thể yêu cầu phải chọn ít nhất một role khi validate
+      // Hoặc có thể yêu cầu phải chọn ít nhất một role khi validate
       if (newRoles.size === 0) {
           newRoles.add('ROLE_USER') 
           Alert.alert('Thông báo', 'Đã tự động chọn vai trò USER vì người dùng phải có ít nhất một vai trò.')
@@ -114,7 +114,7 @@ const AdminAddUserScreen = () => {
               username: username.trim(),
               password: password,
               avatarUrl: avatarUrl.trim() || null, // Gửi null nếu rỗng
-              roles: Array.from(selectedRoles), // Chuyển Set thành Array<String>
+              roles: Array.from(selectedRoles), 
             }
 
             try {
@@ -144,7 +144,6 @@ const AdminAddUserScreen = () => {
   }
   
   // Tiêu đề "Thêm người dùng mới" và nút "< Quay lại" được AdminNavigator quản lý
-
   return (
     <SafeAreaView style={styles.safeArea}>
       <KeyboardAvoidingView
@@ -191,7 +190,6 @@ const AdminAddUserScreen = () => {
               autoCapitalize="none"
               selectionColor={COLORS.PRIMARY}
             />
-            {/* Nếu muốn tích hợp ImagePicker, bạn sẽ thay thế TextInput này */}
 
             <Text style={styles.label}>Vai trò <Text style={styles.requiredStar}>*</Text></Text>
             <View style={styles.rolesContainer}>

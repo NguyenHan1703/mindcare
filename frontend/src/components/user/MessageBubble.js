@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     borderRadius: 20, // Bo tròn nhiều hơn cho bong bóng chat
     elevation: 1, // Độ nổi nhỏ cho Android
-    shadowColor: COLORS.BLACK, // Đổ bóng nhẹ cho iOS
+    shadowColor: COLORS.BLACK, 
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 1,
@@ -76,9 +76,6 @@ const styles = StyleSheet.create({
   aiBubble: {
     backgroundColor: COLORS.BACKGROUND_SECONDARY, // Màu cho tin nhắn của AI
     borderBottomLeftRadius: 5, // Tạo hình dạng đặc trưng
-    // (Tùy chọn) Thêm viền nếu muốn phân biệt rõ hơn với nền
-    // borderWidth: 1,
-    // borderColor: COLORS.BORDER,
   },
   currentUserText: {
     fontSize: 16,

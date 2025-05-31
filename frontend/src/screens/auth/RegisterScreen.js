@@ -28,10 +28,6 @@ const RegisterScreen = () => {
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       clearError()
-      // Reset form fields if needed when screen is focused
-      // setUsername('');
-      // setPassword('');
-      // setConfirmPassword('');
     })
     return unsubscribe
   }, [navigation, clearError])
@@ -50,8 +46,6 @@ const RegisterScreen = () => {
       Alert.alert('Lỗi', 'Mật khẩu và xác nhận mật khẩu không khớp.')
       return
     }
-    // Các validation khác cho độ dài username/password có thể thêm ở đây
-    // hoặc dựa vào lỗi trả về từ backend (thông qua DTO validation)
 
     setIsSubmitting(true)
     clearError()
@@ -67,8 +61,6 @@ const RegisterScreen = () => {
       setPassword('')
       setConfirmPassword('')
     } catch (error) {
-      // Lỗi đã được set trong authState.error bởi AuthContext,
-      // hoặc là error.message từ Promise reject
       Alert.alert('Đăng ký thất bại', authState.error || error.message || 'Đã có lỗi xảy ra.')
     } finally {
       setIsSubmitting(false)

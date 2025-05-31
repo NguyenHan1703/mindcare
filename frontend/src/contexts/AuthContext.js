@@ -83,7 +83,7 @@ const authReducer = (prevState, action) => {
         isLoading: false,
         error: action.error,
       }
-    case ActionTypes.SET_ERROR: // Có thể không cần thiết nếu LOGIN_FAIL và REGISTER_FAIL đã đủ
+    case ActionTypes.SET_ERROR: 
       return {
         ...prevState,
         error: action.error,
@@ -125,7 +125,6 @@ export const AuthProvider = ({ children }) => {
       logger.error('Lỗi khi khôi phục token từ AsyncStorage:', e)
       dispatch({ type: ActionTypes.LOGOUT })
     }
-    // SET_LOADING đã được xử lý trong RESTORE_TOKEN hoặc LOGOUT
   }
 
   useEffect(() => {
@@ -140,7 +139,7 @@ export const AuthProvider = ({ children }) => {
         const response = await loginUserApi(username, password) // response là của Axios
         logger.debug('Login API response.data:', response.data)
 
-        // ✨ SỬA LỖI Ở ĐÂY: Trích xuất từ response.data và kiểm tra token ✨
+        
         const responseData = response.data // Dữ liệu thực sự từ backend nằm trong response.data
 
         if (responseData && responseData.token) {
@@ -175,9 +174,7 @@ export const AuthProvider = ({ children }) => {
       }
     },
     logout: async () => {
-      logger.info('User logging out.')
-      // Không cần SET_LOADING ở đây vì LOGOUT đã set isLoading: false
-      // dispatch({ type: ActionTypes.SET_LOADING, payload: true }); 
+      logger.info('User logging out.') 
       try {
         await AsyncStorage.removeItem('userToken')
         await AsyncStorage.removeItem('userInfo')

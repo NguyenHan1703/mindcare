@@ -14,6 +14,7 @@ import {
 } from 'react-native'
 import { useNavigation, useFocusEffect } from '@react-navigation/native'
 import { Ionicons, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons'
+import { checkAndShowLoginMessage } from '../../utils/loginTracker'
 
 import { useAuth } from '../../contexts/AuthContext'
 import * as ROUTES from '../../constants/routes'
@@ -42,6 +43,12 @@ const HomeScreen = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [isCreatingConvo, setIsCreatingConvo] = useState(false)
   const [error, setError] = useState(null)
+
+  useEffect(() => {
+  if (userInfo?.id) {
+    checkAndShowLoginMessage(userInfo.id)
+  }
+}, [userInfo])
 
   const fetchConversations = useCallback(async (showLoadingIndicator = true) => {
     logger.info('fetchConversations called, showLoadingIndicator:', showLoadingIndicator)

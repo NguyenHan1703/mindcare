@@ -208,7 +208,7 @@ const AdminDashboardScreen = () => {
   )
 
   const renderUserItem = ({ item }) => (
-    <AdminUserListItem // ✨ SỬ DỤNG COMPONENT THẬT ✨
+    <AdminUserListItem 
       user={item}
       onOpenOptions={handleOpenUserOptionsMenu}
     />
@@ -239,7 +239,7 @@ const AdminDashboardScreen = () => {
       ) : (
         <FlatList
           data={users}
-          renderItem={renderUserItem} // ✨ CẬP NHẬT renderItem ✨
+          renderItem={renderUserItem} 
           keyExtractor={(item) => item.id.toString()}
           contentContainerStyle={styles.listContainer}
           onRefresh={fetchUsers}
@@ -250,7 +250,6 @@ const AdminDashboardScreen = () => {
   )
 }
 
-// Styles giữ nguyên như PD #25, chỉ thêm style cho inlineAddButton nếu cần
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
@@ -362,7 +361,7 @@ const styles = StyleSheet.create({
     marginLeft: 15,
   },
   deleteMenuItem: {
-    // Có thể không cần style riêng nếu chỉ thay đổi màu text
+    // Không cần style riêng nếu chỉ thay đổi màu text
   },
   cancelMenuItem: {
     marginTop: 10, 

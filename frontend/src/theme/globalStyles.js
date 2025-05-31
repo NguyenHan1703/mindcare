@@ -3,7 +3,7 @@ import COLORS from '../constants/colors'
 import THEME from '../constants/theme'
 
 export const globalStyles = StyleSheet.create({
-  // --- Containers ---
+  // Containers
   safeArea: {
     flex: 1,
     backgroundColor: COLORS.BACKGROUND_PRIMARY,
@@ -35,10 +35,9 @@ export const globalStyles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.BORDER,
     // Thêm shadow nếu muốn (cần tùy chỉnh cho iOS và Android)
-    // ... shadow styles ...
   },
 
-  // --- Typography ---
+  // Typography 
   textPrimary: {
     color: COLORS.TEXT_PRIMARY,
     fontSize: THEME.FONT_SIZES.BODY_1,
@@ -85,7 +84,7 @@ export const globalStyles = StyleSheet.create({
     fontWeight: THEME.FONT_WEIGHTS.MEDIUM,
   },
 
-  // --- Form Elements ---
+  // Form Elements 
   input: {
     width: '100%',
     height: 50, // Hoặc dùng THEME.SPACING.XX_LARGE
@@ -105,7 +104,7 @@ export const globalStyles = StyleSheet.create({
     fontWeight: THEME.FONT_WEIGHTS.MEDIUM,
   },
 
-  // --- Buttons ---
+  // Buttons 
   buttonPrimary: {
     width: '100%',
     height: 50, // Hoặc dùng THEME.SPACING.XX_LARGE
@@ -116,7 +115,7 @@ export const globalStyles = StyleSheet.create({
     paddingVertical: THEME.SPACING.SMALL,
   },
   buttonPrimaryText: {
-    color: COLORS.WHITE, // Giả sử màu PRIMARY có độ tương phản tốt với WHITE
+    color: COLORS.WHITE, 
     fontSize: THEME.FONT_SIZES.BODY_1,
     fontWeight: THEME.FONT_WEIGHTS.BOLD,
   },
@@ -124,16 +123,16 @@ export const globalStyles = StyleSheet.create({
     backgroundColor: COLORS.DISABLED,
   },
 
-  // --- Utilities ---
+  // Utilities
   marginBottomSmall: {
     marginBottom: THEME.SPACING.SMALL,
   },
   marginBottomMedium: {
     marginBottom: THEME.SPACING.MEDIUM,
   },
-  // ... các utility styles khác ...
+  // Các utility styles khác
   
-  // --- Header specific styles (if you build custom headers often) ---
+  // Header specific styles 
   headerContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -152,6 +151,3 @@ export const globalStyles = StyleSheet.create({
     color: COLORS.TEXT_PRIMARY,
   },
 })
-
-// Bạn có thể export riêng lẻ các style object nếu muốn
-// export const { container, titleText, ... } = globalStyles;

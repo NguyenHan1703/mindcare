@@ -53,7 +53,6 @@ const ForgotPasswordScreen = () => {
 
     try {
       // Gọi API backend /api/auth/forgot-password
-      // Hàm forgotPasswordApi đã được định nghĩa trong src/api/auth.api.js (PD #13.1)
       const response = await forgotPasswordApi(username, newPassword)
       
       // Giả sử backend trả về message trong response.data nếu thành công

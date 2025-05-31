@@ -3,10 +3,10 @@ package com.mindcare.backend.dto.ai;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.time.OffsetDateTime; // Sử dụng OffsetDateTime cho chuẩn ISO 8601
+import java.time.OffsetDateTime; // Chuẩn ISO 8601
 
 @Data
-@NoArgsConstructor // Cần thiết cho Jackson deserialization
+@NoArgsConstructor
 public class OllamaChatResponse {
     private String model;
 
@@ -35,7 +35,7 @@ public class OllamaChatResponse {
     @JsonProperty("eval_duration")
     private Long evalDuration;
 
-    // Constructor nếu bạn muốn tạo đối tượng thủ công (không bắt buộc nếu chỉ dùng cho deserialization)
+    // Constructor để tạo đối tượng thủ công
     public OllamaChatResponse(String model, OffsetDateTime createdAt, OllamaChatMessage message, boolean done) {
         this.model = model;
         this.createdAt = createdAt;

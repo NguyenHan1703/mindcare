@@ -1,5 +1,3 @@
-// src/constants/routes.js
-
 // Màn hình Xác thực (Auth Screens)
 export const LOGIN_SCREEN = 'LoginScreen'
 export const REGISTER_SCREEN = 'RegisterScreen'
@@ -22,8 +20,8 @@ export const ADMIN_USER_EMOTION_STATS_SCREEN = 'AdminUserEmotionStatsScreen' // 
 export const ADMIN_USER_CONVERSATION_LIST_SCREEN = 'AdminUserConversationListScreen' // Admin xem danh sách hội thoại của user
 export const ADMIN_USER_CHAT_VIEW_SCREEN = 'AdminUserChatViewScreen' // Admin xem chi tiết chat của user
 
-// (Tùy chọn) Tên cho các Stack Navigator (nếu bạn muốn dùng hằng số cho cả navigator)
+// Tên cho các Stack Navigator 
 export const AUTH_NAVIGATOR = 'AuthNavigator'
 export const USER_NAVIGATOR = 'UserNavigator'
 export const ADMIN_NAVIGATOR = 'AdminNavigator'
-export const PROFILE_STACK_NAVIGATOR = 'ProfileStackNavigator' // Ví dụ nếu Profile có stack riêng
+export const PROFILE_STACK_NAVIGATOR = 'ProfileStackNavigator' 

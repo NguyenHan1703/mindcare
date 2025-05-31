@@ -345,7 +345,7 @@ const AdminEditUserScreen = () => {
   )
 }
 
-// Copy style từ AdminAddUserScreen và điều chỉnh nếu cần
+// Copy style từ AdminAddUserScreen
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
@@ -448,7 +448,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 15,
   },
-   retryButton: { // Style cho nút thử lại nếu load lỗi ban đầu
+   retryButton: { // Style cho nút thử lại
     backgroundColor: COLORS.PRIMARY,
     paddingVertical: 10,
     paddingHorizontal: 20,

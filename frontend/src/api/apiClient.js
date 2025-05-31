@@ -8,7 +8,7 @@ const apiClient = axios.create({
     'Content-Type': 'application/json',
     // Có thể thêm các headers mặc định khác ở đây nếu cần
   },
-  timeout: 60000, // Timeout sau 50 giây
+  timeout: 60000, // Timeout sau 60 giây
 })
 
 // Request Interceptor: Tự động đính kèm JWT token vào header Authorization
@@ -57,22 +57,8 @@ apiClient.interceptors.response.use(
     if (error.response?.status === 401) {
       // Lỗi 401 (Unauthorized) - Token không hợp lệ hoặc hết hạn
       console.log('Received 401 Unauthorized. Token might be invalid or expired.')
-      // Xử lý logout:
-      // Cách 1: Xóa token trực tiếp và reload app hoặc điều hướng về Login.
-      // Đây là cách đơn giản nhất có thể làm từ interceptor.
-      // AuthContext sẽ tự động phát hiện token không còn và chuyển người dùng về màn hình Login.
       await AsyncStorage.removeItem('userToken')
       await AsyncStorage.removeItem('userInfo')
-      
-      // Thông báo cho người dùng hoặc reload ứng dụng có thể cần thực hiện ở tầng cao hơn
-      // (ví dụ: thông qua một event emitter hoặc một cơ chế global state/navigation)
-      // Ví dụ, nếu bạn có một event emitter:
-      // import EventEmitter from 'eventemitter3';
-      // export const appEmitter = new EventEmitter();
-      // appEmitter.emit('authError:401');
-
-      // Hoặc bạn có thể chỉ đơn giản là reject lỗi để các hàm gọi API tự xử lý
-      // alert('Phiên đăng nhập đã hết hạn hoặc không hợp lệ. Vui lòng đăng nhập lại.'); // Alert đơn giản
     }
     // Trả về lỗi để các hàm gọi API ở tầng service có thể bắt và xử lý tiếp
     return Promise.reject(error)

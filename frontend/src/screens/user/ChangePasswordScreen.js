@@ -72,7 +72,7 @@ const ChangePasswordScreen = () => {
       const passwordData = {
         oldPassword,
         newPassword,
-        confirmNewPassword, // Backend DTO cũng có trường này
+        confirmNewPassword, 
       }
       const response = await changePasswordApi(passwordData)
 
@@ -100,9 +100,6 @@ const ChangePasswordScreen = () => {
     }
   }
 
-  // UserNavigator đã đặt title cho màn hình này là "Đổi mật khẩu"
-  // Nút "< Quay lại" cũng do Stack Navigator tự động cung cấp.
-
   return (
     <SafeAreaView style={styles.safeArea}>
       <KeyboardAvoidingView
@@ -111,8 +108,6 @@ const ChangePasswordScreen = () => {
       >
         <ScrollView contentContainerStyle={styles.scrollViewContainer}>
           <View style={styles.container}>
-            {/* Tiêu đề có thể được đặt bởi navigator, hoặc bạn có thể thêm một Text ở đây */}
-            {/* <Text style={styles.title}>Đổi mật khẩu</Text> */}
 
             {error && <Text style={styles.errorText}>{error}</Text>}
             {successMessage && !error && <Text style={styles.successText}>{successMessage}</Text>}
@@ -186,13 +181,6 @@ const styles = StyleSheet.create({
     paddingVertical: 20, // Thêm padding cho đẹp hơn
     backgroundColor: COLORS.BACKGROUND_PRIMARY,
   },
-  // title: { // Bỏ comment nếu bạn muốn có tiêu đề riêng trong màn hình
-  //   fontSize: 28,
-  //   fontWeight: 'bold',
-  //   color: COLORS.TEXT_PRIMARY,
-  //   marginBottom: 30,
-  //   textAlign: 'center',
-  // },
   input: {
     width: '100%',
     height: 50,

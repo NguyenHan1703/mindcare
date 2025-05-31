@@ -2,9 +2,6 @@ import apiClient from './apiClient.js'
 
 /**
  * Gọi API để tạo một cuộc hội thoại mới.
- * @param {string | null | undefined} title (Tùy chọn) Tiêu đề cho cuộc hội thoại.
- * Nếu là null hoặc undefined, backend có thể sẽ tạo tiêu đề mặc định.
- * @returns {Promise} Promise trả về từ Axios (apiClient).
  * Khi thành công, response.data sẽ chứa ConversationDto của cuộc hội thoại mới.
  */
 export const createConversationApi = (title) => {
@@ -17,7 +14,6 @@ export const createConversationApi = (title) => {
 
 /**
  * Gọi API để lấy danh sách tất cả các cuộc hội thoại của người dùng hiện tại.
- * @returns {Promise} Promise trả về từ Axios (apiClient).
  * Khi thành công, response.data sẽ là một mảng các ConversationDto.
  */
 export const getUserConversationsApi = () => {
@@ -27,8 +23,6 @@ export const getUserConversationsApi = () => {
 
 /**
  * Gọi API để lấy tất cả tin nhắn của một cuộc hội thoại cụ thể.
- * @param {string} conversationId ID của cuộc hội thoại
- * @returns {Promise} Promise trả về từ Axios (apiClient).
  * Khi thành công, response.data sẽ là một mảng các MessageDto.
  */
 export const getConversationMessagesApi = (conversationId) => {
@@ -41,9 +35,6 @@ export const getConversationMessagesApi = (conversationId) => {
 
 /**
  * Gọi API để gửi một tin nhắn mới vào cuộc hội thoại.
- * @param {string} conversationId ID của cuộc hội thoại
- * @param {string} content Nội dung của tin nhắn
- * @returns {Promise} Promise trả về từ Axios (apiClient).
  * Khi thành công, response.data sẽ là MessageDto của tin nhắn người dùng vừa gửi.
  */
 export const saveUserMessageApi = (conversationId, content) => {
@@ -56,8 +47,6 @@ export const saveUserMessageApi = (conversationId, content) => {
 
 /**
  * Gọi API để xóa một cuộc hội thoại.
- * @param {string} conversationId ID của cuộc hội thoại cần xóa.
- * @returns {Promise} Promise trả về từ Axios (apiClient).
  * Backend thường trả về status 204 No Content hoặc 200 OK với MessageResponse.
  */
 export const deleteConversationApi = (conversationId) => {
@@ -70,9 +59,6 @@ export const deleteConversationApi = (conversationId) => {
 
 /**
  * Gọi API để cập nhật tiêu đề của một cuộc hội thoại.
- * @param {string} conversationId ID của cuộc hội thoại cần cập nhật tiêu đề.
- * @param {string} newTitle Tiêu đề mới cho cuộc hội thoại.
- * @returns {Promise} Promise trả về từ Axios (apiClient).
  * Khi thành công, response.data sẽ chứa ConversationDto của cuộc hội thoại đã được cập nhật.
  */
 export const updateConversationTitleApi = (conversationId, newTitle) => {

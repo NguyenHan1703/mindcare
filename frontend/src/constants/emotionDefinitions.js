@@ -1,7 +1,5 @@
-// src/constants/emotionDefinitions.js
-import COLORS from './colors' // Giả sử bạn muốn dùng màu từ file colors.js cho màu mặc định
+import COLORS from './colors' 
 
-// Danh sách các cảm xúc cơ bản theo yêu cầu của bạn
 // Mỗi cảm xúc có:
 // - name: Tên hiển thị (tiếng Việt)
 // - value: Giá trị để lưu trữ/gửi API (thường là tiếng Anh, viết thường)
@@ -19,7 +17,6 @@ export const EMOTIONS_LIST = [
 ]
 
 // Tạo một object map để dễ dàng truy cập thông tin cảm xúc bằng 'value'
-// Ví dụ: EMOTIONS_MAP.happy sẽ trả về object của cảm xúc 'Vui vẻ'
 export const EMOTIONS_MAP = EMOTIONS_LIST.reduce((acc, emotion) => {
   acc[emotion.value] = emotion
   return acc

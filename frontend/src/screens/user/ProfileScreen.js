@@ -75,7 +75,6 @@ const ProfileScreen = () => {
             </View>
           )}
           <Text style={styles.username}>{userInfo?.username || 'Người dùng'}</Text>
-          {/* <Text style={styles.email}>{userInfo?.email || 'Chưa có email'}</Text> */}
         </View>
 
         <View style={styles.menuContainer}>
@@ -143,11 +142,6 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: COLORS.TEXT_PRIMARY,
-  },
-  email: { // Bỏ comment nếu bạn có email
-    fontSize: 16,
-    color: COLORS.TEXT_SECONDARY,
-    marginTop: 4,
   },
   menuContainer: {
     marginHorizontal: 20,

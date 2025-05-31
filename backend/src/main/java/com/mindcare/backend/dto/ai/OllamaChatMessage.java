@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OllamaChatMessage {
-    private String role;    // "system", "user", hoặc "assistant"
+    private String role;
     private String content;
-    // private List<String> images; // Bỏ comment nếu bạn làm việc với model multimodal và muốn gửi ảnh (dưới dạng base64 encoded strings)
+    // private List<String> images; // Làm việc với model multimodal và muốn gửi ảnh
 }

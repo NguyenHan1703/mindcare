@@ -28,8 +28,4 @@ public interface ConversationRepository extends MongoRepository<Conversation, St
      * @return Optional chứa Conversation nếu tìm thấy và thuộc về người dùng
      */
     Optional<Conversation> findByIdAndUserId(String id, String userId);
-
-    // Bạn có thể thêm các phương thức truy vấn tùy chỉnh khác nếu cần
-    // Ví dụ:
-    // List<Conversation> findByUserIdAndTitleContainingIgnoreCase(String userId, String titleKeyword);
 }

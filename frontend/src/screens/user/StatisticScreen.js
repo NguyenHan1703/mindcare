@@ -19,9 +19,8 @@ import {
     getEmotionVisual // Dùng để lấy thông tin visual của cảm xúc
 } from '../../constants/emotionDefinitions'
 import { getEmotionStatsApi } from '../../api/emotion.api.js'
-// import { useAuth } from '../../contexts/AuthContext'; // Không cần userId nếu API /me
 
-// Cấu hình tiếng Việt cho lịch (nếu chưa làm ở đâu đó global)
+// Cấu hình tiếng Việt cho lịch
 if (!LocaleConfig.locales['vi']) {
     LocaleConfig.locales['vi'] = {
         monthNames: ['Tháng 1','Tháng 2','Tháng 3','Tháng 4','Tháng 5','Tháng 6','Tháng 7','Tháng 8','Tháng 9','Tháng 10','Tháng 11','Tháng 12'],
@@ -37,8 +36,7 @@ if (!LocaleConfig.locales['vi']) {
 const screenWidth = Dimensions.get('window').width
 
 const StatisticScreen = () => {
-  // const { state: authState } = useAuth();
-  // const userId = authState.userInfo?.id;
+
 
   const [currentMonthDate, setCurrentMonthDate] = useState(new Date())
   const [markedDates, setMarkedDates] = useState({})
@@ -49,8 +47,6 @@ const StatisticScreen = () => {
   const fetchStatsForMonth = useCallback(async (dateToFetch) => {
     setIsLoading(true)
     setError(null)
-    // setMarkedDates({}); // Không reset ở đây để tránh nhấp nháy khi chuyển tháng nhanh
-    // setEmotionSummary({});
 
     const year = dateToFetch.getFullYear()
     const month = dateToFetch.getMonth() + 1
@@ -74,11 +70,6 @@ const StatisticScreen = () => {
           const visual = getEmotionVisual(log.emotion) // Sử dụng hàm helper
           newMarkedDates[log.logDate] = { // logDate từ backend đã là "YYYY-MM-DD"
             dots: [{ key: log.emotion, color: visual.color, selectedDotColor: visual.color }],
-            // Hoặc dùng customStyles nếu muốn hiển thị emoji/icon trực tiếp trên lịch (phức tạp hơn)
-            // customStyles: {
-            //   container: { backgroundColor: visual.colorMuted || visual.color, borderRadius: 16 },
-            //   text: { color: visual.textColor || COLORS.WHITE, fontWeight: 'bold', fontSize: 10 },
-            // }
           }
         })
       }
@@ -122,11 +113,6 @@ const StatisticScreen = () => {
         }
     })
     
-    // Nếu không có cảm xúc nào trong summary mà có trong EMOTIONS_LIST (ít xảy ra nếu dữ liệu tốt)
-    // hoặc nếu bạn muốn hiển thị cả những cảm xúc không có trong tháng (với count = 0),
-    // bạn có thể điều chỉnh logic ở trên.
-    // Hiện tại, chỉ hiển thị các cảm xúc có trong summary.
-
     if (labels.length === 0) return null // Không có gì để vẽ
 
     return {
@@ -179,7 +165,6 @@ const StatisticScreen = () => {
             style={styles.calendar}
             monthFormat={'MMMM, yyyy'}
             firstDay={1} // Tuần bắt đầu từ Thứ Hai
-            // hideExtraDays={true} // Ẩn các ngày của tháng trước/sau
           />
 
           {isLoading && <ActivityIndicator size="large" color={COLORS.PRIMARY} style={styles.loader} />}
@@ -199,8 +184,6 @@ const StatisticScreen = () => {
               {EMOTIONS_LIST.map(emotionDef => ( // Sử dụng EMOTIONS_LIST từ file định nghĩa chung
                 <View key={emotionDef.value} style={styles.legendItem}>
                   <View style={[styles.legendColorDot, {backgroundColor: emotionDef.color}]} />
-                  {/* Hoặc dùng icon/emoji: <Text style={{fontSize: 18, marginRight: 5}}>{emotionDef.emoji}</Text> */}
-                  {/* <Ionicons name={emotionDef.icon} size={20} color={emotionDef.color} style={styles.legendIcon} /> */}
                   <Text style={styles.legendText}>{emotionDef.name}</Text>
                 </View>
               ))}
@@ -253,7 +236,7 @@ const StatisticScreen = () => {
                     style={styles.chartStyle}
                     verticalLabelRotation={0} // Giữ label ngang
                     fromZero={true}
-                    withCustomBarColorFromData={true} // Quan trọng để dùng màu từ dataset.colors
+                    withCustomBarColorFromData={true} // Dùng màu từ dataset.colors
                     flatColor={true} // Sử dụng màu đơn sắc cho mỗi cột từ dataset.colors
                     showValuesOnTopOfBars={true}
                     withInnerLines={true} // Hiển thị đường lưới ngang
@@ -345,7 +328,6 @@ const styles = StyleSheet.create({
   },
   legendText: {
     fontSize: 15,
-    // color: COLORS.TEXT_SECONDARY, // Màu được đặt inline
   },
   summaryContainer: {
     marginTop: 20,
@@ -357,7 +339,6 @@ const styles = StyleSheet.create({
   },
   summaryText: {
     fontSize: 15,
-    // color: COLORS.TEXT_SECONDARY, // Màu được đặt inline
     marginBottom: 5,
     lineHeight: 22,
   },

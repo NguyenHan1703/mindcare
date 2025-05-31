@@ -4,7 +4,7 @@ import lombok.Data;
 
 import java.util.List;
 
-@Data // Lombok: Tự động tạo getters, setters (không cần constructor cụ thể nếu dùng @Data)
+@Data
 public class JwtResponse {
     private String token;
     private String type = "Bearer"; // Loại token, mặc định là Bearer

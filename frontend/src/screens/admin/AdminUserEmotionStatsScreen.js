@@ -21,7 +21,7 @@ import {
 import { getUserEmotionStatsForAdminApi } from '../../api/admin.api.js' // Sử dụng API của admin
 import { useNavigation, useRoute } from '@react-navigation/native'
 
-// Cấu hình tiếng Việt cho lịch (nếu chưa làm ở đâu đó global)
+// Cấu hình tiếng Việt cho lịch
 if (!LocaleConfig.locales['vi']) {
     LocaleConfig.locales['vi'] = {
         monthNames: ['Tháng 1','Tháng 2','Tháng 3','Tháng 4','Tháng 5','Tháng 6','Tháng 7','Tháng 8','Tháng 9','Tháng 10','Tháng 11','Tháng 12'],

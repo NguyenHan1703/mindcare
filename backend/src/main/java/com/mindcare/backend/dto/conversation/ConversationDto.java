@@ -13,8 +13,7 @@ public class ConversationDto {
     private String id;
     private String userId;
     private String title;
-    private String aiModel; // Model AI được sử dụng (sẽ được cấu hình)
+    private String aiModel; // Model AI được sử dụng
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt; // Thời điểm cập nhật cuối (ví dụ, khi có tin nhắn mới)
-    // Bạn có thể thêm các trường như lastMessagePreview, unreadCount sau này nếu cần
 }

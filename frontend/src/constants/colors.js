@@ -1,5 +1,3 @@
-// src/constants/colors.js
-
 // Bảng màu chính cho Dark Theme
 // Phong cách: Thanh nhã, dịu mắt, tập trung vào trải nghiệm người dùng.
 // Ưu tiên các màu có độ tương phản tốt để dễ đọc.
